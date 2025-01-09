@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -23,7 +24,7 @@ import { FaAngleRight } from "react-icons/fa";
 // import theme from './Font';
 import SingleAbsolute from "./SingleAbsolute";
 import SingleList from "./SingleList";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 // import axios from "axios";
 import { useState, useEffect } from "react";
 import Payment from "../../Pages/Payment/Payment";
@@ -37,6 +38,7 @@ import { useSelector } from "react-redux";
 export default function SinglePage() {
   const [res, setRes] = useState({});
   const { id } = useParams();
+  const navigate = useNavigate();
   const userStore = useSelector((store) => store.UserReducer);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -72,6 +74,10 @@ export default function SinglePage() {
   // prevent click on video
   const handleClickPrevent = (event) => {
     event.preventDefault();
+  };
+
+  const handleImageClick = (videoUrl) => {
+    navigate(`/video-detail?url=${encodeURIComponent(videoUrl)}`); // Điều hướng và truyền URL
   };
 
   return (
@@ -146,104 +152,130 @@ export default function SinglePage() {
         <div className="max-w-[598px] xl:mr-72">
           <SingleList />
         </div>
-        <Box mt="1rem" bg="#D7DBDD" w="95%" p="5">
-          <Flex justify="center">
-            <Heading size="xl">
+        <Box
+          mt="7rem"
+          bg="white"
+          w="90%"
+          p="6"
+          borderRadius="lg"
+          shadow="md"
+          border="1px solid"
+          borderColor="gray.300"
+        >
+          <Flex justify="center" mb="4">
+            <Heading size="xl" color="blue.700">
               {capitalizeFirstLetter(res?.course?.title) || "Course Name"}
             </Heading>
           </Flex>
-          <Flex mt="1rem" justify="center">
-            <Heading size="md">Teacher:</Heading>
-            <Heading size="md" ml="1rem">
+
+          <Flex mt="4" justify="center" align="center">
+            <Heading size="md" color="gray.600">
+              Teacher:
+            </Heading>
+            <Heading size="md" ml="1rem" color="black">
               {capitalizeFirstLetter(res?.course?.teacher) || "Teacher Name"}
             </Heading>
           </Flex>
-          <Flex mt="1rem" justify="center">
-            <Heading size="md">Course Created:</Heading>
-            <Heading size="md" ml="1rem">
+
+          <Flex mt="4" justify="center" align="center">
+            <Heading size="md" color="gray.600">
+              Course Created:
+            </Heading>
+            <Heading size="md" ml="1rem" color="black">
               {convertDateFormat(res?.course?.createdAt)}
             </Heading>
           </Flex>
-          <Flex mt="1rem" justify="center">
-            <Heading size="md">Total Videos:</Heading>
-            <Heading size="md" ml="1rem">
+
+          <Flex mt="4" justify="center" align="center">
+            <Heading size="md" color="gray.600">
+              Total Videos:
+            </Heading>
+            <Heading size="md" ml="1rem" color="black">
               {res?.course?.videos?.length || 0}
             </Heading>
           </Flex>
         </Box>
 
         {res?.course?.videos?.length ? (
-  <Box mt="40px">
-    {res?.course?.videos?.map((video, index) => {
-      const embedUrl = video?.url; // URL nhúng YouTube đã được cung cấp từ API
+          <Box mt="40px">
+            {res?.course?.videos?.map((video, index) => {
+              const embedUrl = video?.link; // URL nhúng YouTube đã được cung cấp từ API
 
-      return (
-        <div key={index}>
-          <Card
-            key={index}
-            direction={{ base: "column", sm: "row" }}
-            overflow="hidden"
-            variant="outline"
-            border="1px solid"
-            m="15px"
-          >
-            <Box
-              w="20vw"
-              p="1rem"
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-            >
-              {embedUrl ? (
-                <iframe
-                  width="100%"
-                  height="200"
-                  src={embedUrl}
-                  title={video?.title || "YouTube video player"}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              ) : (
-                <Image w="100%" src={video?.img || ""} alt={video?.title} />
-              )}
-            </Box>
-            <Stack>
-              <CardBody>
-                <Heading size="md">{video?.title || "Video Name"}</Heading>
-                <Text py="2">{video?.description}</Text>
-                <Text size="12px">
-                  <Text fontWeight="bold" display="inline" mr="5px">
-                    Instructor:
-                  </Text>
-                  {capitalizeFirstLetter(video?.teacher) || "Teacher Name"}
-                </Text>
-                <Text size="12px">
-                  <Text fontWeight="bold" display="inline" mr="5px">
-                    Date:
-                  </Text>
-                  {convertDateFormat(video?.createdAt)}
-                </Text>
-                <Text>
-                  <Text fontWeight="bold" display="inline" mr="5px">
-                    Views:
-                  </Text>
-                  {video?.views || 0}
-                </Text>
-              </CardBody>
-            </Stack>
-          </Card>
-        </div>
-      );
-    })}
-  </Box>
-) : (
-  <Box mt="3rem" p="1rem 0" borderBottom="1px solid gray" mb="1rem">
-    <Text fontSize="1.2rem" fontWeight="bold">
-      We are Working On Content of this course. You will soon get Video.
-    </Text>
-  </Box>
-)}
+              return (
+                <div key={index}>
+                  <Card
+                    key={index}
+                    direction={{ base: "column", sm: "row" }}
+                    overflow="hidden"
+                    variant="outline"
+                    border="1px solid"
+                    m="15px"
+                    onClick={() => handleImageClick(embedUrl)} // Thêm onClick
+                  >
+                    <Box
+                      w="20vw"
+                      p="1rem"
+                      display="flex"
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      {embedUrl ? (
+                        <iframe
+                          width="100%"
+                          height="200"
+                          src={embedUrl}
+                          title={video?.title || "YouTube video player"}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        ></iframe>
+                      ) : (
+                        <Image
+                          w="100%"
+                          src={video?.img || ""}
+                          alt={video?.title}
+                        />
+                      )}
+                    </Box>
+                    <Stack>
+                      <CardBody>
+                        <Heading size="md">
+                          {video?.title || "Video Name"}
+                        </Heading>
+                        <Text py="2">{video?.description}</Text>
+                        <Text size="12px">
+                          <Text fontWeight="bold" display="inline" mr="5px">
+                            Instructor:
+                          </Text>
+                          {capitalizeFirstLetter(video?.teacher) ||
+                            "Teacher Name"}
+                        </Text>
+                        <Text size="12px">
+                          <Text fontWeight="bold" display="inline" mr="5px">
+                            Date:
+                          </Text>
+                          {convertDateFormat(video?.createdAt)}
+                        </Text>
+                        <Text>
+                          <Text fontWeight="bold" display="inline" mr="5px">
+                            Views:
+                          </Text>
+                          {video?.views || 0}
+                        </Text>
+                      </CardBody>
+                    </Stack>
+                  </Card>
+                </div>
+              );
+            })}
+          </Box>
+        ) : (
+          <Box mt="3rem" p="1rem 0" borderBottom="1px solid gray" mb="1rem">
+            <Text fontSize="1.2rem" fontWeight="bold">
+              We are Working On Content of this course. You will soon get Video.
+            </Text>
+          </Box>
+        )}
 
         <div>
           <Payment isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
