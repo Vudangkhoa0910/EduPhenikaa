@@ -1,159 +1,194 @@
 import {
-    Box,
-    Button,
-    ButtonGroup,
-    Flex,
-    Grid,
-    IconButton,
-    Select,
-    Text,
-    useBreakpointValue,
-  } from "@chakra-ui/react";
-  import React, { useEffect, useState } from "react";
-  import { Link, useNavigate } from "react-router-dom";
-  import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
-  import { AddIcon, EditIcon } from "@chakra-ui/icons";
-  import { useDispatch, useSelector } from "react-redux";
-  import convertDateFormat, {
-    deleteProduct,
-    getProduct,
-  } from "../../Redux/AdminReducer/action";
-  import Pagination from "./Pagination";
-  import AdminNavTop from "../AdminNavTop";
-  import Navbar from "../UserComponents/UserNavbar";
+  Box,
+  Button,
+  Flex,
+  Grid,
+  Select,
+  Input,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Text,
+  useBreakpointValue,
+} from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import Pagination from "./Pagination";
+import AdminNavTop from "../AdminNavTop";
+import { getProduct } from "../../Redux/AdminReducer/action";
+import convertDateFormat from "../../Redux/AdminReducer/action";
 
 const Add = () => {
+  const store = useSelector((store) => store.AdminReducer.data);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [order, setOrder] = useState("");
+  const limit = 4;
 
-    const store = useSelector((store) => store.AdminReducer.data);
-    const dispatch = useDispatch();
-    const [page, setPage] = useState(1);
-    const [search, setSearch] = useState("");
-    const [order, setOrder] = useState("");
-    const limit = 4;
-    const tableSize = useBreakpointValue({ base: "sm", sm: "md", md: "lg" });
-    const courseSize = useBreakpointValue({ base: "md", sm: "lg", md: "xl" });
-  
-    const handleSearch = (e) => {
-      setSearch(e.target.value);
-      // console.log(search)
-    };
-    const handleSelect = (e) => {
-      const { value } = e.target;
-      setOrder(value);
-    };
-    // console.log(order)
-  
-    useEffect(() => {
-      dispatch(getProduct(page, limit, search, order));
-    }, [page, search, order, limit]);
+  // Responsive kích thước bảng
+  const tableSize = useBreakpointValue({ base: "sm", sm: "md", md: "lg" });
 
-    const navigate = useNavigate();
-  
-    const handleVideos = (id, title) => {
-        navigate(`/admin/videos/add/${id}`, { state: { id, title } });
-      };
-  
-    const handlePageChange = (page) => {
-      setPage(page);
-    };
-    // console.log("store.length",store.length)
-    const count = 4;
-    // console.log("count",count)
-  
-    const handlePageButton = (val) => {
-      setPage((prev) => prev + val);
-    };
+  useEffect(() => {
+    dispatch(getProduct(page, limit, search, order));
+  }, [page, search, order, limit, dispatch]);
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const handleSelect = (e) => {
+    const { value } = e.target;
+    setOrder(value);
+  };
+
+  const handlePageChange = (page) => {
+    setPage(page);
+  };
+
+  const handlePageButton = (val) => {
+    setPage((prev) => prev + val);
+  };
+
+  const handleVideos = (id, title) => {
+    navigate(`/admin/videos/add/${id}`, { state: { id, title } });
+  };
+
+  const count = 4; // Số trang tổng
 
   return (
+    <Grid
+      h="100vh"
+      templateRows="auto 1fr"
+      gap={5}
+      p={5}
+      bg="gray.50"
+      mt="10vh" // Đẩy toàn bộ giao diện xuống dưới để nhường chỗ cho thanh bar trên cùng
+    >
+      {/* Thanh tìm kiếm và bộ lọc */}
+      <Flex
+        h="10vh"
+        justifyContent="space-between"
+        align="center"
+        bg="white"
+        p={3}
+        borderRadius="lg"
+        shadow="md"
+      >
+        {/* Input tìm kiếm */}
+        <Flex align="center" w="50%">
+          <Input
+            placeholder="Search Courses"
+            border="1px solid"
+            borderColor="gray.300"
+            h="8vh"
+            w="100%"
+            onChange={handleSearch}
+          />
+        </Flex>
+        {/* Select và nút thêm */}
+        <Flex align="center" gap={3}>
+          <Select
+            placeholder="Sort by Price"
+            onChange={handleSelect}
+            w="200px"
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </Select>
+          <Button
+            colorScheme="teal"
+            onClick={() => handleVideos(1, "New Video Title")} // Pass appropriate id and title here
+          >
+            Add New Video
+          </Button>
+        </Flex>
+      </Flex>
 
-    <Grid className="Nav" h={"99vh"} w="94%" gap={10}>
-      <Box mt='90px'>
-          <AdminNavTop handleSearch={handleSearch} />
-        {/*  */}
-        <Box className={`course ${courseSize}`}>
-          <Grid
-            templateColumns={{
-              xl: "repeat(3,20% 60% 20%)",
-              lg: "repeat(3,20% 60% 20%)",
-              base: "repeat(1,1fr)",
-            }}
-            gap={{ xl: 0, lg: 0, base: 7 }}
+      {/* Bảng dữ liệu */}
+      <Box
+        bg="white"
+        p={5}
+        borderRadius="lg"
+        shadow="md"
+        overflow="auto"
+      >
+        <Text fontSize="2xl" fontWeight="bold" color="teal.500" mb={5}>
+          Course List
+        </Text>
+
+        <Box overflowX="auto">
+          <Table
+            variant="striped"
+            colorScheme="teal"
+            size={tableSize}
           >
-            <Text fontWeight={"bold"}>Welcome To Course</Text>
-            <Select w={"80%"} onChange={handleSelect}>
-              <option value="asc">Price Sort in Ascending Order</option>
-              <option value="desc">Price Sort in Descending Order</option>
-            </Select>
-            <Box fontWeight={"bold"}>
-              <Link to="/admin/addCourse">Create</Link>
-            </Box>
-          </Grid>
-          <Box
-            w={{ xl: "100%", lg: "90%", md: "80%", base: "80%" }}
-            overflowX="auto"
-          >
-            <Table
-              variant="striped"
-              borderRadius="md"
-              w="100%"
-              size={tableSize}
-            >
-              <Thead>
-                <Tr>
-                  <Th>Title</Th>
-                  <Th>Date</Th>
-                  <Th>Category</Th>
-                  <Th>Description</Th>
-                  <Th>Price</Th>
-                  <Th>Teacher</Th>
-                </Tr>
-              </Thead>
+            <Thead>
+              <Tr>
+                <Th>Title</Th>
+                <Th>Date</Th>
+                <Th>Category</Th>
+                <Th>Description</Th>
+                <Th>Price</Th>
+                <Th>Teacher</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
               {store?.length > 0 &&
-                store?.map((el, i) => {
-                  return (
-                    <Tbody key={i}>
-                      <Tr>
-                        <Td>{el.title}</Td>
-                        <Td>{convertDateFormat(el.createdAt)}</Td>
-                        <Td>{el.category}</Td>
-                        <Td>{el.description}</Td>
-                        <Td>{el.price}</Td>
-                        <Td>{el.teacher}</Td>
-                        <Box>
-                          <Button
-                            onClick={() => handleVideos(el._id, el.title)}
-                          >
-                            Add Videos
-                          </Button>
-                        </Box>
-                      </Tr>
-                    </Tbody>
-                  );
-                })}
-            </Table>
-          </Box>
-          <Box textAlign={{ xl: "right", lg: "right", base: "left" }}>
-            <Button disabled={page <= 1} onClick={() => handlePageButton(-1)}>
-              Prev
-            </Button>
-            <Pagination
-              totalCount={count}
-              current_page={page}
-              handlePageChange={handlePageChange}
-            />
-            <Button
-              disabled={page >= count}
-              onClick={() => handlePageButton(1)}
-            >
-              Next
-            </Button>
-          </Box>
+                store.map((el, i) => (
+                  <Tr key={i}>
+                    <Td>{el.title}</Td>
+                    <Td>{convertDateFormat(el.createdAt)}</Td>
+                    <Td>{el.category}</Td>
+                    <Td>{el.description}</Td>
+                    <Td>${el.price}</Td>
+                    <Td>{el.teacher}</Td>
+                    <Td>
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        onClick={() => handleVideos(el._id, el.title)}
+                      >
+                        Add Videos
+                      </Button>
+                    </Td>
+                  </Tr>
+                ))}
+            </Tbody>
+          </Table>
         </Box>
+
+        {/* Phân trang */}
+        <Flex justify="space-between" align="center" mt={5}>
+          <Button
+            colorScheme="teal"
+            onClick={() => handlePageButton(-1)}
+            isDisabled={page <= 1}
+          >
+            Previous
+          </Button>
+          <Pagination
+            totalCount={count}
+            current_page={page}
+            handlePageChange={handlePageChange}
+          />
+          <Button
+            colorScheme="teal"
+            onClick={() => handlePageButton(1)}
+            isDisabled={page >= count}
+          >
+            Next
+          </Button>
+        </Flex>
       </Box>
     </Grid>
+  );
+};
 
-
-  )
-}
-
-export default Add
+export default Add;

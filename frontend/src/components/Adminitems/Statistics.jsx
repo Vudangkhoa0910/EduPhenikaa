@@ -1,7 +1,6 @@
-import { Box, Flex, Grid, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, Text, useBreakpointValue } from "@chakra-ui/react";
 import React from "react";
 import { Bar, Line, Pie } from "react-chartjs-2";
-import AdminNavTop from "../AdminNavTop";
 
 const Statistics = () => {
   const data = {
@@ -15,8 +14,9 @@ const Statistics = () => {
       },
     ],
   };
+
   const datapie1 = {
-    labels: ["Full Stack", "Frontened", "Backened"],
+    labels: ["Full Stack", "Frontend", "Backend"],
     datasets: [
       {
         data: [300, 50, 100],
@@ -40,57 +40,99 @@ const Statistics = () => {
   };
 
   return (
-    <Grid className="Nav" h={"99vh"} w="94%" gap={10}>
-      {/* <AdminSidebar /> */}
-      <Box mt='80px'>
-        <AdminNavTop />
-        {/*  */}
-        <Grid
-          templateColumns={{
-            xl: "repeat(2,1fr)",
-            lg: "repeat(2,1fr)",
-            base: "repeat(1,1fr)",
-          }}
-        >
-          <Box
-            w={{ xl: "600px", lg: "600px", base: "50%" }}
-            h="400px"
-            p={4}
-            borderWidth={1}
-            borderColor="gray.200"
-            borderRadius="md"
-          >
-            <h2>Total Customer Interaction</h2>
-            <Line data={data} />
-          </Box>
-
-          <Flex align="center" maxHeight="60vh">
-            <Box p={4} boxShadow="md">
-              <Text fontSize="xl" fontWeight="bold" mb={4}>
-                Courses Distribution
-              </Text>
-              <Box height="300px">
-                <Pie data={datapie1} options={{ maintainAspectRatio: false }} />
-              </Box>
-            </Box>
-          </Flex>
-        </Grid>
-
+    <Grid className="Nav" h={"99vh"} w="100%" gap={10}>
+      <Box mt="80px">
+        {/* Header Section */}
         <Flex
           align="center"
-          justify="center"
-          minHeight={{ xl: "60vh", lg: "60vh", base: "30vh" }}
-          w={{ xl: "600px", lg: "600px", base: "80%" }}
+          justify="space-between"
+          p={4}
+          bg="white"
+          borderRadius="md"
+          boxShadow="md"
+          mb={6}
+          mr={6}
+          ml={6}
         >
-          <Box p={4} boxShadow="md" w="100%">
-            <Text fontSize="xl" fontWeight="bold" mb={4}>
-              Monthly Sales
+          <Text fontSize="2xl" fontWeight="bold" color="teal.600">
+            Statistics Dashboard
+          </Text>
+        </Flex>
+
+        {/* Statistics Grids */}
+        <Grid
+          templateColumns={{
+            xl: "repeat(2, 1fr)",
+            lg: "repeat(2, 1fr)",
+            base: "repeat(1, 1fr)",
+          }}
+          gap={6}
+        >
+          {/* Total Customer Interaction */}
+          <Box
+            p={6}
+            bg="white"
+            boxShadow="lg"
+            borderRadius="md"
+            borderWidth={1}
+            borderColor="gray.200"
+            mr={6}
+            ml={6}
+          >
+            <Text fontSize="xl" fontWeight="bold" mb={4} color="teal.600">
+              Total Customer Interaction
             </Text>
-            <Box height="300px">
-              <Bar data={databar} options={{ maintainAspectRatio: false }} />
+            <Box height="300px" p={4} bg="gray.50" borderRadius="md">
+              <Line data={data} />
             </Box>
           </Box>
-        </Flex>
+
+          {/* Courses Distribution Pie Chart */}
+          <Box
+            p={6}
+            bg="white"
+            boxShadow="lg"
+            borderRadius="md"
+            borderWidth={1}
+            borderColor="gray.200"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            mr={6}
+            ml={6}
+          >
+            <Text fontSize="xl" fontWeight="bold" mb={4} color="teal.600">
+              Courses Distribution
+            </Text>
+            <Box height="300px" width="100%" bg="gray.50" borderRadius="md">
+              <Pie data={datapie1} options={{ maintainAspectRatio: false }} />
+            </Box>
+          </Box>
+        </Grid>
+
+        {/* Monthly Sales Bar Chart */}
+        <Box
+          mt={8}
+          p={6}
+          bg="white"
+          boxShadow="lg"
+          borderRadius="md"
+          borderWidth={1}
+          borderColor="gray.200"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          mr={6}
+          ml={6}
+        >
+          <Text fontSize="xl" fontWeight="bold" mb={4} color="teal.600">
+            Monthly Sales
+          </Text>
+          <Box height="300px" width="100%" bg="gray.50" borderRadius="md">
+            <Bar data={databar} options={{ maintainAspectRatio: false }} />
+          </Box>
+        </Box>
       </Box>
     </Grid>
   );

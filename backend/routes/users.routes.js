@@ -28,27 +28,27 @@ userRouter.get("/", auth, async (req, res) => {
   }
 });
 
-// userRouter.get("/", auth, async (req, res) => {
-//   try {
-//     if (req.user.role === "admin") { // Assuming role is stored in req.user
-//       const { page, limit } = req.query;
-//       const pageNumber = parseInt(page, 10) || 1; // Convert to integer with a default value of 1
-//       const limitNumber = parseInt(limit, 10) || 10; // Convert to integer with a default value of 10
+userRouter.get("/", auth, async (req, res) => {
+  try {
+    if (req.user.role === "admin") { // Assuming role is stored in req.user
+      const { page, limit } = req.query;
+      const pageNumber = parseInt(page, 10) || 1; // Convert to integer with a default value of 1
+      const limitNumber = parseInt(limit, 10) || 10; // Convert to integer with a default value of 10
       
-//       // Use pageNumber and limitNumber in your database query or pagination logic
-//       const users = await UserModel.find()
-//         .skip((pageNumber - 1) * limitNumber)
-//         .limit(limitNumber);
+      // Use pageNumber and limitNumber in your database query or pagination logic
+      const users = await UserModel.find()
+        .skip((pageNumber - 1) * limitNumber)
+        .limit(limitNumber);
       
-//       res.status(200).json({ users });
-//     } else {
-//       res.status(401).json({ error: "You don't have access to users" });
-//     }
-//   } catch (err) {
-//     console.error('error');
-//     res.status(500).json({ message: "Something went wrong", error: err.message });
-//   }
-// });
+      res.status(200).json({ users });
+    } else {
+      res.status(401).json({ error: "You don't have access to users" });
+    }
+  } catch (err) {
+    console.error('error');
+    res.status(500).json({ message: "Something went wrong", error: err.message });
+  }
+});
 
 //registration
 // Access: all

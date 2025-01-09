@@ -10,22 +10,22 @@ import {
   Button,
   Avatar,
   Center,
-  AbsoluteCenter,
   useToast,
+  HStack,
+  SimpleGrid,
+  GridItem,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import axios from "axios";
 import UserNavbar from "../components/UserComponents/UserNavbar";
 import { useDispatch, useSelector } from "react-redux";
 import { actionLoginSuccess } from "../Redux/UserReducer/actionType";
 import { showToast } from "../components/SignUp";
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
   const userStore = useSelector((store) => store.UserReducer);
 
-  // const decode = jwtDecode(creds);
-  // console.log(decode);
   const [name, setName] = useState(userStore?.name || "");
   const [email, setEmail] = useState(userStore?.email || "");
   const [password, setPassword] = useState("");
@@ -39,7 +39,6 @@ const ProfilePage = () => {
   const navigate = useNavigate();
 
   const handleSave = () => {
-    // Implement save logic here
     const obj = {
       name,
       email,
@@ -52,107 +51,155 @@ const ProfilePage = () => {
     const id = userStore?.userId;
 
     axios
-      .patch(`https://elearning-platform-using-mern-j5py.vercel.app/users/update/${id}`, obj)
-      .then((res) => {
-        dispatch(actionLoginSuccess(res?.data));
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            email: res.data.user.email,
-            name: res.data.user.name,
-            role: res.data.user.role,
-            token: res.data.token,
-            isAuth: true,
-            userId: res.data.user._id,
-            age: res.data.user.age,
-            job: res.data.user.job,
-            place: res.data.user.city,
-          })
-        );
-        navigate(-1); 
-        showToast({toast,message:'Profile Updated',color:'green'});
+  .patch(`http://localhost:5000/users/update/${id}`, obj)
+  .then((res) => {
+    console.log('API Response:', res);
+    console.log("User ID:", id);
+    dispatch(actionLoginSuccess(res?.data));
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        email: res.data.user.email,
+        name: res.data.user.name,
+        role: res.data.user.role,
+        token: res.data.token,
+        isAuth: true,
+        userId: res.data.user._id,
+        age: res.data.user.age,
+        job: res.data.user.job,
+        place: res.data.user.city,
       })
-      .catch((err) => {
-        showToast({toast,message:'Error occur',color:'green'});
-        console.log(err)
-      });
+    );
+    navigate(-1);
+    showToast({ toast, message: "Profile Updated", color: "green" });
+  })
+  .catch((err) => {
+    console.error('Error during profile update:', err);
+    showToast({ toast, message: "Error occurred", color: "red" });
+  });
   };
 
+  const cardBg = useColorModeValue("white", "gray.800");
+  const cardShadow = useColorModeValue("md", "dark-lg");
+
   return (
-    <Box pb="2rem">
-      <Box>
-        <UserNavbar />
-      </Box>
-      <Box maxW="500px" mx="auto" p="4" pt="90px" border="1px solid gray">
+    <Box pb="2rem" bg="gray.100" minH="100vh">
+      <UserNavbar />
+      <Box
+        maxW="800px"
+        mx="auto"
+        p="8"
+        pt="90px"
+        bg={cardBg}
+        shadow={cardShadow}
+        rounded="lg"
+        mt={30}
+      >
         <Center>
           <Avatar
-            justifyContent={"center"}
             size="2xl"
             name={name}
             src="/path/to/profile-image.jpg"
+            bg="teal.500"
           />
         </Center>
-        <Heading mt="10" mb="4" fontSize="2xl" textAlign="center">
+        <Heading mt="6" mb="6" fontSize="2xl" textAlign="center" color="teal.600">
           Edit Profile
         </Heading>
-        <VStack spacing="4" align="stretch">
-          <FormControl isRequired>
-            <FormLabel>Name</FormLabel>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </FormControl>
+        <SimpleGrid columns={2} spacing={6}>
+          {/* Name */}
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Name</FormLabel>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                bg="gray.50"
+                _focus={{ borderColor: "teal.400" }}
+              />
+            </FormControl>
+          </GridItem>
 
-          <FormControl isRequired>
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </FormControl>
+          {/* Email */}
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                bg="gray.50"
+                _focus={{ borderColor: "teal.400" }}
+              />
+            </FormControl>
+          </GridItem>
 
-          <FormControl isRequired>
-            <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </FormControl>
+          {/* Password */}
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                bg="gray.50"
+                _focus={{ borderColor: "teal.400" }}
+              />
+            </FormControl>
+          </GridItem>
 
-          <FormControl isRequired>
-            <FormLabel>Age</FormLabel>
-            <Input
-              type="number"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-            />
-          </FormControl>
+          {/* Age */}
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Age</FormLabel>
+              <Input
+                type="number"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                bg="gray.50"
+                _focus={{ borderColor: "teal.400" }}
+              />
+            </FormControl>
+          </GridItem>
 
-          <FormControl isRequired>
-            <FormLabel>City</FormLabel>
-            <Input value={city} onChange={(e) => setCity(e.target.value)} />
-          </FormControl>
+          {/* City */}
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>City</FormLabel>
+              <Input
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                bg="gray.50"
+                _focus={{ borderColor: "teal.400" }}
+              />
+            </FormControl>
+          </GridItem>
 
-          <FormControl isRequired>
-            <FormLabel>Job</FormLabel>
-            <Input value={job} onChange={(e) => setJob(e.target.value)} />
-          </FormControl>
+          {/* Job */}
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Job</FormLabel>
+              <Input
+                value={job}
+                onChange={(e) => setJob(e.target.value)}
+                bg="gray.50"
+                _focus={{ borderColor: "teal.400" }}
+              />
+            </FormControl>
+          </GridItem>
+        </SimpleGrid>
 
-          <Button
-            mt="4"
-            isDisabled={
-              name === "" ||
-              email === "" ||
-              age === "" ||
-              city === "" ||
-              job === ""
-            }
-            colorScheme="blue"
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-        </VStack>
+        <Button
+          mt="8"
+          width="full"
+          colorScheme="teal"
+          isDisabled={
+            name === "" || email === "" || age === "" || city === "" || job === ""
+          }
+          onClick={handleSave}
+        >
+          Save
+        </Button>
       </Box>
     </Box>
   );

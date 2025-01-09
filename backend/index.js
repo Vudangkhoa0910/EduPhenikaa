@@ -49,11 +49,13 @@ app.get('/',(req,res)=>{
   }
 })
 
-app.listen(process.env.port, async () => {
+const port = process.env.port || 5000; // Giá trị mặc định là 3000
+
+app.listen(port, async () => {
   try {
     await connection;
     console.log(`connected to db`);
-    console.log(`connected to port ${process.env.port}`);
+    console.log(`connected to port ${port}`);
   } catch (error) {
     console.log(`error: ${error}`);
   }

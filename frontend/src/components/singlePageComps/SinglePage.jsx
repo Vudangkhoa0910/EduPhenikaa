@@ -43,7 +43,7 @@ export default function SinglePage() {
 
   // /courses/:courseID
 
-  let vdo_url = `https://elearning-platform-using-mern-j5py.vercel.app/videos/courseVideos/${id}`;
+  let vdo_url = `http://localhost:5000/videos/courseVideos/${id}`;
 
   console.log(vdo_url);
 
@@ -173,66 +173,77 @@ export default function SinglePage() {
         </Box>
 
         {res?.course?.videos?.length ? (
-          <Box mt="40px">
-            {res?.course?.videos?.map((video, index) => {
-              return (
-                <div key={index}>
-                  <Card
-                    key={index}
-                    direction={{ base: "column", sm: "row" }}
-                    overflow="hidden"
-                    variant="outline"
-                    border="1px solid"
-                    m="15px"
-                  >
-                    <Box onClick={handleClickPrevent} position="relative" _hover={{cursor:'not-allowed'}} w='20vw' p='1rem' display='flex' justifyContent='center' alignItems='center'>
-                      <Image w='100%'  src={video?.img || ''} alt={video?.title}/>
-                      {
-                        <Box
-                          onClick={handleClickPrevent}
-                          position="absolute"
-                        >
-                          <AiOutlineLock color="tomato" size="45px" />
-                        </Box>
-                      }
-                    </Box>
-                    <Stack>
-                      <CardBody>
-                        <Heading size="md">{video?.title || 'Video Name'}</Heading>
-                        <Text py="2">{video.description}</Text>
-                        <Text size="12px">
-                          <Text fontWeight="bold" display="inline" mr="5px">
-                            Instructor:
-                          </Text>
-                          {capitalizeFirstLetter(video?.teacher) || 'Teacher Name'}
-                        </Text>
-                        <Text size="12px">
-                          <Text fontWeight="bold" display="inline" mr="5px">
-                            Date:
-                          </Text>
-                          {convertDateFormat(video?.createdAt)}
-                        </Text>
-                        <Text size="12px"></Text>
-                        <Text>
-                          <Text fontWeight="bold" display="inline" mr="5px">
-                            Views:
-                          </Text>
-                          {video?.views || 0}
-                        </Text>
-                      </CardBody>
-                    </Stack>
-                  </Card>
-                </div>
-              );
-            })}
-          </Box>
-        ) : (
-          <Box mt="3rem" p="1rem 0" borderBottom="1px solid gray" mb="1rem">
-            <Text fontSize="1.2rem" fontWeight="bold">
-              We are Working On Content of this course. You will soon get Video.
-            </Text>
-          </Box>
-        )}
+  <Box mt="40px">
+    {res?.course?.videos?.map((video, index) => {
+      const embedUrl = video?.url; // URL nhúng YouTube đã được cung cấp từ API
+
+      return (
+        <div key={index}>
+          <Card
+            key={index}
+            direction={{ base: "column", sm: "row" }}
+            overflow="hidden"
+            variant="outline"
+            border="1px solid"
+            m="15px"
+          >
+            <Box
+              w="20vw"
+              p="1rem"
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              {embedUrl ? (
+                <iframe
+                  width="100%"
+                  height="200"
+                  src={embedUrl}
+                  title={video?.title || "YouTube video player"}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              ) : (
+                <Image w="100%" src={video?.img || ""} alt={video?.title} />
+              )}
+            </Box>
+            <Stack>
+              <CardBody>
+                <Heading size="md">{video?.title || "Video Name"}</Heading>
+                <Text py="2">{video?.description}</Text>
+                <Text size="12px">
+                  <Text fontWeight="bold" display="inline" mr="5px">
+                    Instructor:
+                  </Text>
+                  {capitalizeFirstLetter(video?.teacher) || "Teacher Name"}
+                </Text>
+                <Text size="12px">
+                  <Text fontWeight="bold" display="inline" mr="5px">
+                    Date:
+                  </Text>
+                  {convertDateFormat(video?.createdAt)}
+                </Text>
+                <Text>
+                  <Text fontWeight="bold" display="inline" mr="5px">
+                    Views:
+                  </Text>
+                  {video?.views || 0}
+                </Text>
+              </CardBody>
+            </Stack>
+          </Card>
+        </div>
+      );
+    })}
+  </Box>
+) : (
+  <Box mt="3rem" p="1rem 0" borderBottom="1px solid gray" mb="1rem">
+    <Text fontSize="1.2rem" fontWeight="bold">
+      We are Working On Content of this course. You will soon get Video.
+    </Text>
+  </Box>
+)}
 
         <div>
           <Payment isOpen={isOpen} onOpen={onOpen} onClose={onClose} />

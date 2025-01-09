@@ -7,11 +7,11 @@ import {
   Input,
   Text,
   Textarea,
+  useBreakpointValue,
+  Flex,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-
-import AdminNavTop from "../AdminNavTop";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addUser } from "../../Redux/AdminReducer/action";
 import { useNavigate } from "react-router-dom";
 
@@ -37,46 +37,63 @@ const AddUser = () => {
       return { ...prev, [name]: value };
     });
   };
+
   const handleSubmit = () => {
     dispatch(addUser(detail));
     alert("User Added Successfully");
     navigate("/admin/users");
   };
 
-  return (
-    <Grid className="Nav" h={"99vh"} w="94%" gap={10}>
-      {/* <AdminSidebar/>  */}
-      <Box  mt="80px">
-        <AdminNavTop />
+  // Responsive layout based on screen size
+  const formWidth = useBreakpointValue({ base: "100%", md: "70%", lg: "50%" });
 
+  return (
+    <Grid
+      h="100vh"
+      templateRows="auto 1fr"
+      gap={10}
+      p={5}
+      bg="gray.50"
+      mt="5vh"
+    >
+      {/* Main Content */}
+      <Flex justify="center" align="center" w="100%" p={5}>
         <Box
-         
-          border={"2px solid gray"}
-          borderRadius={10}
-          p={10}
-          h="90%"
+          w={formWidth}
+          border="1px solid #ccc"
+          borderRadius="8px"
+          p={8}
+          bg="white"
+          shadow="lg"
         >
-          <FormControl>
+          <Text fontSize="2xl" fontWeight="bold" mb={4} textAlign="center">
+            Add New User
+          </Text>
+
+          {/* Form Inputs */}
+          <FormControl mb={4}>
             <FormLabel>Name</FormLabel>
             <Input
               type="text"
-              placeholder="Enter Course Title"
+              placeholder="Enter User's Name"
               name="name"
               value={detail.name}
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl mt={4}>
+
+          <FormControl mb={4}>
             <FormLabel>Email</FormLabel>
             <Textarea
               type="email"
-              placeholder="Enter Email"
+              placeholder="Enter User's Email"
               name="email"
               value={detail.email}
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl mt={4}>
+
+          <FormControl mb={4}>
             <FormLabel>Password</FormLabel>
             <Input
               type="password"
@@ -86,7 +103,8 @@ const AddUser = () => {
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl mt={4}>
+
+          <FormControl mb={4}>
             <FormLabel>City</FormLabel>
             <Input
               type="text"
@@ -96,7 +114,8 @@ const AddUser = () => {
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl mt={4}>
+
+          <FormControl mb={4}>
             <FormLabel>Age</FormLabel>
             <Input
               type="number"
@@ -106,7 +125,8 @@ const AddUser = () => {
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl mt={4}>
+
+          <FormControl mb={4}>
             <FormLabel>Job</FormLabel>
             <Input
               type="text"
@@ -116,7 +136,8 @@ const AddUser = () => {
               onChange={handleChange}
             />
           </FormControl>
-          <FormControl mt={4}>
+
+          <FormControl mb={4}>
             <FormLabel>Image</FormLabel>
             <Input
               type="text"
@@ -126,17 +147,19 @@ const AddUser = () => {
               onChange={handleChange}
             />
           </FormControl>
+
+          {/* Submit Button */}
           <Button
             mt={4}
-            colorScheme="blue"
-            size="md"
-            isFullWidth
+            colorScheme="teal"
+            size="lg"
+            width="100%"
             onClick={handleSubmit}
           >
             Submit
           </Button>
         </Box>
-      </Box>
+      </Flex>
     </Grid>
   );
 };

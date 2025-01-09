@@ -2,7 +2,6 @@ import React from "react";
 import {
   Flex,
   Box,
-  Select,
   Input,
   Button,
   IconButton,
@@ -29,8 +28,6 @@ const Navbar = () => {
     navigate("/");
   }
 
-
-
   return (
     <Box>
       <Flex
@@ -38,60 +35,64 @@ const Navbar = () => {
         align="center"
         justify="space-between"
         p={4}
-        bg="#f5f5f5"
+        bg="#FF9900" // Background
         boxShadow="0 4px 6px rgba(0, 0, 0, 0.1)"
         position="fixed"
         width="100%"
         zIndex={12}
       >
+        {/* Logo */}
         <Flex align="center">
           <Box>
-            {/* Logo */}
-            {/* <img src={image} alt="Logo" width="30%" /> */}
             <Text
               fontSize={30}
               fontWeight="extrabold"
-              color="#0056d2"
               onClick={home}
               _hover={{ cursor: "pointer" }}
             >
-              EduPNK 
+              <span style={{ color: "#003366" }}>Edu</span>
+              <span style={{ color: "#FFFFFF" }}>PHENIKAA</span>
             </Text>
           </Box>
         </Flex>
 
+        {/* Desktop Layout */}
         {!isMobile ? (
           <Flex>
-            <Box >
+            <Box display="flex" alignItems="center">
               {/* Search Bar */}
               <Input
                 type="text"
                 variant="filled"
-                border="1px solid black"
-                fontSize='0.7rem'
-                m='0 2rem'
-                color="black"
+                border="1px solid #003366"
+                fontSize="0.7rem"
+                color="#003366"
                 placeholder="What do you want to learn?"
-                borderRadius="10px 0 0px 10px"
-                _placeholder={{ color: "#555454",letterSpacing:'1px' }}
+                borderRadius="10px 0 0 10px"
+                _placeholder={{ color: "#555454", letterSpacing: "1px" }}
+                width="40rem"
+                autoComplete="off"
+                readOnly
+                onFocus={(e) => e.target.removeAttribute("readOnly")}
+              />
+              <IconButton
+                aria-label="Search"
+                icon={<FaSearch />}
+                bg="#003366" 
+                color="white"
+                borderRadius="0 10px 10px 0"
+                _hover={{ background: "#002147" }}
               />
             </Box>
-            <IconButton
-              aria-label="Search"
-              icon={<FaSearch />}
-              bg="#0056d2"
-              color="white"
-              borderRadius="0px 10px 10px 0px"
-              _hover={{ background: "#0288D1" }}
-            />
           </Flex>
         ) : (
+          // Mobile Layout
           <Flex align="center">
             <IconButton
               aria-label="Menu"
               icon={<FaBars />}
               bg="transparent"
-              color="#0056d2"
+              color="#003366" 
               onClick={onOpen}
               fontSize="2xl"
               mr={2}
@@ -99,55 +100,33 @@ const Navbar = () => {
           </Flex>
         )}
 
+        {/* Mobile Search Button */}
         {isMobile && (
           <IconButton
             aria-label="Search"
             icon={<FaSearch />}
             color="black"
             borderRadius="7px"
-            _hover={{ backgroundColor: "#003e9c", color: "white" }}
+            _hover={{ backgroundColor: "#003366", color: "white" }}
           />
         )}
 
+        {/* Desktop Links and Buttons */}
         {!isMobile && (
           <Flex align="center">
-            {/* Links */}
+            {/* Login Link */}
             <Box mr={4}>
-              <Link
-                _hover={{ color: "#003e9c", textDecoration: "underline" }}
-                href="#"
-              >
-                
-              </Link>
-            </Box>
-            <Box mr={4}>
-              <Link
-                _hover={{ color: "#003e9c", textDecoration: "underline" }}
-                href="#"
-              >
-                
-              </Link>
-            </Box>
-            <Box mr={4}>
-              <Link
-                _hover={{ color: "#003e9c", textDecoration: "underline" }}
-                href="#"
-              >
-                
-              </Link>
-            </Box>
-            <Box mr={4}>
-              <Link textDecoration="none" color="#0056d2" href="/login">
+              <Link textDecoration="none" color="#003366" href="/login">
                 Login
               </Link>
             </Box>
 
             {/* Join for Free Button */}
             <Button
-              bg="#0056d2"
+              bg="#003366" 
               color="white"
               borderRadius="5px"
-              _hover={{ bg: "#003e9c" }}
+              _hover={{ bg: "#002147" }}
               onClick={signup}
             >
               Join for free
@@ -155,11 +134,9 @@ const Navbar = () => {
           </Flex>
         )}
       </Flex>
-      <NavBarDrawer
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onClose={onClose}
-      />
+
+      {/* Drawer for Mobile */}
+      <NavBarDrawer isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
     </Box>
   );
 };

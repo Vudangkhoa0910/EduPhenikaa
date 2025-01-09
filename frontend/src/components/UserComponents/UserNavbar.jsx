@@ -20,8 +20,7 @@ const Navbar = () => {
   const isMobile = useBreakpointValue({ base: true, lg: false });
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem('user'))
-  
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -50,7 +49,7 @@ const Navbar = () => {
         align="center"
         justify="space-between"
         p={4}
-        bg="#f5f5f5"
+        bg="#FF9900" 
         boxShadow="0 4px 6px rgba(0, 0, 0, 0.1)"
         position="fixed"
         width="100vw"
@@ -60,113 +59,116 @@ const Navbar = () => {
         <Flex align="center">
           <Box>
             {/* Logo */}
-            {/* <img src={image} alt="Logo" width="30%" /> */}
             <Text
               fontSize={30}
               fontWeight="extrabold"
-              color="#0056d2"
+              color="#003366" 
               _hover={{ cursor: "pointer" }}
               onClick={home}
             >
-              SRM 
+              <span style={{ color: "#003366" }}>Edu</span>
+              <span style={{ color: "#FFFFFF" }}>PHENIKAA</span>
             </Text>
           </Box>
         </Flex>
 
         {!isMobile ? (
           <Flex align="center">
-            <Box>
-              {/* Search Bar */}
-              <Input
+          <Box display="flex" alignItems="center">
+            {/* Search Bar */}
+            <Input
                 type="text"
                 variant="filled"
-                border="1px solid black"
+                border="1px solid #003366"
                 fontSize="0.7rem"
-                m="0 2rem"
-                color="black"
+                color="#003366"
                 placeholder="What do you want to learn?"
-                borderRadius="10px 0 0px 10px"
+                borderRadius="10px 0 0 10px"
                 _placeholder={{ color: "#555454", letterSpacing: "1px" }}
+                width="40rem"
+                autoComplete="off"
+                readOnly
+                onFocus={(e) => e.target.removeAttribute("readOnly")}
               />
-            </Box>
             <IconButton
               aria-label="Search"
               icon={<FaSearch />}
-              bg="#0056d2"
+              bg="#003366" 
               color="white"
-              borderRightRadius="7px"
-              borderRadius="0px 10px 10px 0px"
+              borderRadius="0 10px 10px 0" 
+              _hover={{ backgroundColor: "#002147" }} 
             />
-          </Flex>
+          </Box>
+        </Flex>
         ) : (
           <Flex align="center">
             <IconButton
               aria-label="Menu"
               icon={<FaBars />}
               bg="transparent"
-              color="#0056d2"
+              color="#003366"
               fontSize="2xl"
               mr={2}
               onClick={onOpen}
             />
           </Flex>
         )}
-        {/* small screen search bar and icon  */}
+
         {isMobile &&
-          location.pathname ===
-            "/home" &&(
-              <Box>
-                {showSearchBar ? (
-                  <Flex align="center">
-                    <Box>
-                      {/* Search Bar */}
-                      <Input
-                        type="text"
-                        variant="filled"
-                        border="1px solid black"
-                        fontSize="0.8rem"
-                        m="0 2rem"
-                        color="black"
-                        placeholder="Find your new Skiil!"
-                        borderRadius="10px 0 0px 10px"
-                        _placeholder={{
-                          color: "#555454",
-                          letterSpacing: "0.5px",
-                        }}
-                      />
-                    </Box>
-                    <IconButton
-                      aria-label="Search"
-                      icon={<FaSearch />}
-                      bg="#0056d2"
-                      onClick={handleShowSearchBar}
-                      color="white"
-                      borderRightRadius="7px"
-                      borderRadius="0px 10px 10px 0px"
+          location.pathname === "/home" && (
+            <Box>
+              {showSearchBar ? (
+                <Flex align="center">
+                  <Box>
+                    {/* Search Bar */}
+                    <Input
+                      type="text"
+                      variant="filled"
+                      border="1px solid #003366"
+                      fontSize="0.8rem"
+                      m="0 2rem"
+                      color="#003366"
+                      placeholder="Find your new Skill!"
+                      borderRadius="10px 0 0px 10px"
+                      _placeholder={{
+                        color: "#555454",
+                        letterSpacing: "0.5px",
+                      }}
                     />
-                  </Flex>
-                ) : (
+                  </Box>
                   <IconButton
                     aria-label="Search"
                     icon={<FaSearch />}
-                    color="white"
-                    borderRadius="7px"
-                    bg="#0056d2"
+                    bg="#003366"
                     onClick={handleShowSearchBar}
-                    _hover={{ backgroundColor: "#003e9c", color: "white" }}
+                    color="white"
+                    borderRightRadius="7px"
+                    borderRadius="0px 10px 10px 0px"
                   />
-                )}
-              </Box>
-            )}
+                </Flex>
+              ) : (
+                <IconButton
+                  aria-label="Search"
+                  icon={<FaSearch />}
+                  color="white"
+                  borderRadius="7px"
+                  bg="#003366"
+                  onClick={handleShowSearchBar}
+                  _hover={{ backgroundColor: "#002147", color: "white" }}
+                />
+              )}
+            </Box>
+          )}
 
         {!isMobile && (
           <Flex align="center">
             <Box mr={4}>
               <Link
-                _hover={{ color: "#003e9c", textDecoration: "underline" }}
+                _hover={{ color: "#002147", textDecoration: "underline" }}
                 href="/Teachme"
+                color="#003366"
               >
-                {user.role!=='teacher' && user.role!=='admin' && 'Teach On SRM'}            
+                {user.role !== "teacher" && user.role !== "admin" && "Teach On SRM"}
               </Link>
             </Box>
             <Box>

@@ -1,3 +1,22 @@
+.slick-slide > div {
+  display: flex;
+  justify-content: center; /* Căn giữa theo chiều ngang */
+}
+
+.slick-slide {
+  max-width: 300px; /* Giữ kích thước tối đa cố định */
+  margin: 0 auto;   /* Căn giữa phần tử */
+}
+
+.slick-list {
+  padding: 10px 0; /* Tạo khoảng trống nhỏ phía trên và dưới */
+}
+
+.slick-track {
+  display: flex;
+  align-items: center; /* Căn giữa phần tử theo chiều dọc */
+}
+
 
 .slick-prev {
     position: absolute;
@@ -60,4 +79,5 @@
     font-weight: 900;
     color:#0056d2 ;
   }
+  
   

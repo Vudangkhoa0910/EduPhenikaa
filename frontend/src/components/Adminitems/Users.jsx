@@ -5,50 +5,47 @@ import {
   Flex,
   Grid,
   IconButton,
+  Input,
   Select,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
   Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import { AddIcon, EditIcon } from "@chakra-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
-import convertDateFormat, {
-  deleteProduct,
-  deleteUsers,
-  getUser,
-} from "../../Redux/AdminReducer/action";
 import Pagination from "./Pagination";
 import AdminNavTop from "../AdminNavTop";
+import { deleteUsers, getUser } from "../../Redux/AdminReducer/action";
 
 const Users = () => {
   const store = useSelector((store) => store.AdminReducer.users);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [order, setOrder] = useState("");
+  // const [search, setSearch] = useState("");
+  // const [order, setOrder] = useState("");
   const limit = 4;
 
-  // console.log(store,"storeAll")
+  useEffect(() => {
+    dispatch(getUser(page, limit));
+  }, [page, limit, dispatch]);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
   };
-  // console.log(search)
 
   const handleSelect = (e) => {
     const { value } = e.target;
     setOrder(value);
   };
-  // console.log(order)
-
-  useEffect(() => {
-    dispatch(getUser(page, limit));
-  }, [page]);
 
   const handleDelete = (id, name) => {
-    //  console.log(id)
     dispatch(deleteUsers(id));
     alert(`${name} is Deleted`);
   };
@@ -56,102 +53,143 @@ const Users = () => {
   const handlePageChange = (page) => {
     setPage(page);
   };
-  // console.log(store.length)
-  const count = 2;
 
   const handlePageButton = (val) => {
     setPage((prev) => prev + val);
   };
 
+  const count = 2; // Số trang tổng
+
   return (
-    <Grid className="Nav" h={"99vh"} w="94%" gap={10}>
-      {/* <AdminSidebar/>  */}
-      <Box mt='80px'>
-        <AdminNavTop handleSearch={handleSearch} />
-        {/*  */}
-        <Box>
-          <Grid
-            templateColumns={{
-              xl: "repeat(3,20% 60% 20%)",
-              lg: "repeat(3,20% 60% 20%)",
-              base: "repeat(1,1fr)",
-            }}
-            gap={{ xl: 0, lg: 0, base: 7 }}
-            m={3}
-          >
-            <Text fontWeight={"bold"}>User Details</Text>
-            <Select w={"80%"} onChange={handleSelect}>
-              <option value="asc">Age Sort in Ascending Order</option>
-              <option value="desc">Age Sort in Descending Order</option>
-            </Select>
-            <Box fontWeight={"bold"}>
-              <Link to="/admin/users/add">Create</Link>
-            </Box>
-          </Grid>
-          <Box
-            w={{ xl: "100%", lg: "90%", md: "80%", base: "80%" }}
-            maxWidth="100%"
-            overflowX="auto"
-          >
-            <Table variant="striped" borderRadius="md" w="100%">
-              <Thead>
-                <Tr>
-                  <Th>Name</Th>
-                  <Th>Role</Th>
-                  <Th>Email</Th>
-                  <Th>City</Th>
-                  <Th>Age</Th>
-                  <Th>Subscribed Course</Th>
-                </Tr>
-              </Thead>
+    <Grid
+      h="100vh"
+      templateRows="auto 1fr"
+      gap={5}
+      p={5}
+      bg="gray.50"
+      mt="10vh" // Đẩy toàn bộ giao diện xuống dưới để nhường chỗ cho thanh bar trên cùng
+    >
+      {/* Thanh tìm kiếm và bộ lọc */}
+      <Flex
+        h="10vh"
+        justifyContent="space-between"
+        align="center"
+        bg="white"
+        p={3}
+        borderRadius="lg"
+        shadow="md"
+        zIndex={1}
+        position="sticky"
+        top="10vh"
+      >
+        {/* Input tìm kiếm */}
+        <Flex align="center" w="50%">
+          <Input
+            placeholder="Search Users"
+            border="1px solid"
+            borderColor="gray.300"
+            h="8vh"
+            w="100%"
+            onChange={handleSearch}
+          />
+        </Flex>
+        {/* Select và nút thêm */}
+        <Flex align="center" gap={3}>
+          <Select placeholder="Sort by Age" onChange={handleSelect} w="200px">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </Select>
+          <Link to="/admin/users/add">
+            <Button colorScheme="teal" leftIcon={<AddIcon />}>
+              Add New User
+            </Button>
+          </Link>
+        </Flex>
+      </Flex>
+
+      {/* Bảng dữ liệu */}
+      <Box
+        bg="white"
+        p={5}
+        borderRadius="lg"
+        shadow="md"
+        overflow="auto"
+      >
+        <Text fontSize="2xl" fontWeight="bold" color="teal.500" mb={5}>
+          User Details
+        </Text>
+
+        <Box overflowX="auto">
+          <Table variant="striped" colorScheme="teal">
+            <Thead>
+              <Tr>
+                <Th>Name</Th>
+                <Th>Role</Th>
+                <Th>Email</Th>
+                <Th>City</Th>
+                <Th>Age</Th>
+                <Th>Subscribed Courses</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
               {store?.length > 0 &&
-                store?.map((el, i) => {
-                  return (
-                    <Tbody key={i}>
-                      <Tr>
-                        <Td>{el.name}</Td>
-                        <Td>{el.role}</Td>
-                        <Td>{el.email}</Td>
-                        <Td>{el.city}</Td>
-                        <Td>{el.age}</Td>
-                        <Td>{el.course.length}</Td>
-                        <Box>
-                          <Button onClick={() => handleDelete(el._id, el.name)}>
-                            Delete
-                          </Button>
-                          <Link to={`/admin/users/edit/${el._id}`}>
-                            <ButtonGroup size="sm" isAttached variant="outline">
-                              <Button>Edit</Button>
-                              <IconButton
-                                aria-label="Add to friends"
-                                icon={<EditIcon />}
-                              />
-                            </ButtonGroup>
-                          </Link>
-                        </Box>
-                      </Tr>
-                    </Tbody>
-                  );
-                })}
-            </Table>
-          </Box>
-          <Box textAlign={{ xl: "right", lg: "right", base: "left" }}>
-            <Button disabled={page <= 1} onClick={() => handlePageButton(-1)}>
-              Prev
-            </Button>
-            <Pagination
-              totalCount={count}
-              current_page={page}
-              handlePageChange={handlePageChange}
-            />
-            <Button
-              disabled={page >= count}
-              onClick={() => handlePageButton(1)}
-            >
-              Next
-            </Button>
-          </Box>
+                store.map((el, i) => (
+                  <Tr key={i}>
+                    <Td>{el.name}</Td>
+                    <Td>{el.role}</Td>
+                    <Td>{el.email}</Td>
+                    <Td>{el.city}</Td>
+                    <Td>{el.age}</Td>
+                    <Td>{el.course.length}</Td>
+                    <Td>
+                      <Flex gap={2}>
+                        <Button
+                          colorScheme="red"
+                          size="sm"
+                          onClick={() => handleDelete(el._id, el.name)}
+                        >
+                          Delete
+                        </Button>
+                        <Link to={`/admin/users/edit/${el._id}`}>
+                          <ButtonGroup size="sm" isAttached variant="outline">
+                            <Button>Edit</Button>
+                            <IconButton
+                              aria-label="Edit"
+                              icon={<EditIcon />}
+                            />
+                          </ButtonGroup>
+                        </Link>
+                      </Flex>
+                    </Td>
+                  </Tr>
+                ))}
+            </Tbody>
+          </Table>
         </Box>
+
+        {/* Phân trang */}
+        <Flex justify="space-between" align="center" mt={5}>
+          <Button
+            colorScheme="teal"
+            onClick={() => handlePageButton(-1)}
+            isDisabled={page <= 1}
+          >
+            Previous
+          </Button>
+          <Pagination
+            totalCount={count}
+            current_page={page}
+            handlePageChange={handlePageChange}
+          />
+          <Button
+            colorScheme="teal"
+            onClick={() => handlePageButton(1)}
+            isDisabled={page >= count}
+          >
+            Next
+          </Button>
+        </Flex>
       </Box>
     </Grid>
   );
