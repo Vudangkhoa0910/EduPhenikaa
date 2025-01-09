@@ -28,8 +28,8 @@ const Users = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
-  // const [search, setSearch] = useState("");
-  // const [order, setOrder] = useState("");
+  const [search, setSearch] = useState("");
+  const [order, setOrder] = useState("");
   const limit = 4;
 
   useEffect(() => {
@@ -58,7 +58,23 @@ const Users = () => {
     setPage((prev) => prev + val);
   };
 
-  const count = 2; // Số trang tổng
+  const count = 2; // Total pages
+
+  // Filter users by name based on search term
+  const filteredUsers = store?.filter((user) =>
+    user.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Sort users based on age
+  const sortedUsers = filteredUsers?.sort((a, b) => {
+    if (order === "asc") {
+      return a.age - b.age;
+    } else if (order === "desc") {
+      return b.age - a.age;
+    } else {
+      return 0;
+    }
+  });
 
   return (
     <Grid
@@ -67,9 +83,9 @@ const Users = () => {
       gap={5}
       p={5}
       bg="gray.50"
-      mt="10vh" // Đẩy toàn bộ giao diện xuống dưới để nhường chỗ cho thanh bar trên cùng
+      mt="10vh" // To make space for the top navigation bar
     >
-      {/* Thanh tìm kiếm và bộ lọc */}
+      {/* Search and Filter section */}
       <Flex
         h="10vh"
         justifyContent="space-between"
@@ -82,7 +98,7 @@ const Users = () => {
         position="sticky"
         top="10vh"
       >
-        {/* Input tìm kiếm */}
+        {/* Search Input */}
         <Flex align="center" w="50%">
           <Input
             placeholder="Search Users"
@@ -93,7 +109,7 @@ const Users = () => {
             onChange={handleSearch}
           />
         </Flex>
-        {/* Select và nút thêm */}
+        {/* Sorting and Add New User button */}
         <Flex align="center" gap={3}>
           <Select placeholder="Sort by Age" onChange={handleSelect} w="200px">
             <option value="asc">Ascending</option>
@@ -107,7 +123,7 @@ const Users = () => {
         </Flex>
       </Flex>
 
-      {/* Bảng dữ liệu */}
+      {/* Table with data */}
       <Box
         bg="white"
         p={5}
@@ -133,8 +149,8 @@ const Users = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {store?.length > 0 &&
-                store.map((el, i) => (
+              {sortedUsers?.length > 0 &&
+                sortedUsers.map((el, i) => (
                   <Tr key={i}>
                     <Td>{el.name}</Td>
                     <Td>{el.role}</Td>
@@ -168,7 +184,7 @@ const Users = () => {
           </Table>
         </Box>
 
-        {/* Phân trang */}
+        {/* Pagination */}
         <Flex justify="space-between" align="center" mt={5}>
           <Button
             colorScheme="teal"
