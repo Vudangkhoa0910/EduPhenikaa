@@ -328,31 +328,37 @@ const Footer = () => {
               sm: "100%",
             }}
           >
-            <Image
-              width={{
-                base:"35%",
-                sm: "20%",
-                md: "35%",
-                lg: "45%",
-              }}
-              src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/download_on_the_app_store_badge_en.svg?auto=format%2Ccompress&dpr=1&w=152&h=45&q=40"
-              alt="AppleStoreLogo"
-            />
+            <Box
+              display="flex"
+              justifyContent="space-around"
+              alignItems="center"
+            >
+              <Image
+                width={{
+                  base: "35%",
+                  sm: "20%",
+                  md: "35%",
+                  lg: "45%",
+                }}
+                src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/download_on_the_app_store_badge_en.svg?auto=format%2Ccompress&dpr=1&w=152&h=45&q=40"
+                alt="AppleStoreLogo"
+              />
+
+              <Image
+                width={{
+                  base: "35%",
+                  sm: "20%",
+                  md: "35%",
+                  lg: "45%",
+                }}
+                src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/en_generic_rgb_wo_45.png?auto=format%2Ccompress&dpr=1&w=152&h=45&q=40"
+                alt="Google_Play"
+              />
+            </Box>
 
             <Image
-
               width={{
-                base:"35%",
-                sm: "20%",
-                md: "35%",
-                lg: "45%",
-              }}
-              src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/en_generic_rgb_wo_45.png?auto=format%2Ccompress&dpr=1&w=152&h=45&q=40"
-              alt="Google_Play"
-            />
-            <Image
-              width={{
-                base:"15%",
+                base: "15%",
                 sm: "15%",
                 md: "25%",
                 lg: "35%",
@@ -384,11 +390,9 @@ const Footer = () => {
       >
         <Box>
           {" "}
-          <Text fontSize="13.5px">
-            © 2025 EduPNK Inc. All rights reserved.
-          </Text>
+          <Text fontSize="13.5px">© 2025 EduPNK Inc. All rights reserved.</Text>
         </Box>
-        <Flex spacing={4} overflow='hidden'>
+        <Flex spacing={4} overflow="hidden">
           <Image
             src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://s3.amazonaws.com/coursera_assets/footer/facebook.png?auto=format%2Ccompress&dpr=1&w=28&h=28&q=40"
             alt=""
@@ -411,19 +415,19 @@ const Footer = () => {
             mr={4}
           />
           <Image
-          display={{
-            base:"none",
-            sm:"block"
-          }}
+            display={{
+              base: "none",
+              sm: "block",
+            }}
             src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://s3.amazonaws.com/coursera_assets/footer/instagram.png?auto=format%2Ccompress&dpr=1&w=28&h=28&q=40"
             alt=""
             mr={4}
           />
           <Image
-          display={{
-            base:"none",
-            sm:"block"
-          }}
+            display={{
+              base: "none",
+              sm: "block",
+            }}
             src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera_assets.s3.amazonaws.com/images/9b7e964107839c77644d7e7d15035b73.png?auto=format%2Ccompress&dpr=1&w=28&h=28&q=40"
             alt=""
             mr={4}
