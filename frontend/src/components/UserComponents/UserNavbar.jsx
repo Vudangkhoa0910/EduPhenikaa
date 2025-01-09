@@ -49,12 +49,14 @@ const Navbar = () => {
         align="center"
         justify="space-between"
         p={4}
-        bg="#FF9900" 
+        bg="#FF9900"
         boxShadow="0 4px 6px rgba(0, 0, 0, 0.1)"
         position="fixed"
-        width="100vw"
+        width="calc(100vw)" // Giảm chiều rộng
+        mx="auto" // Căn giữa thanh Navbar
         zIndex={12}
         top={0}
+        borderTopRadius="16px" // Bo góc trên
       >
         <Flex align="center">
           <Box>
@@ -62,7 +64,7 @@ const Navbar = () => {
             <Text
               fontSize={30}
               fontWeight="extrabold"
-              color="#003366" 
+              color="#003366"
               _hover={{ cursor: "pointer" }}
               onClick={home}
             >
@@ -74,9 +76,9 @@ const Navbar = () => {
 
         {!isMobile ? (
           <Flex align="center">
-          <Box display="flex" alignItems="center">
-            {/* Search Bar */}
-            <Input
+            <Box display="flex" alignItems="center">
+              {/* Search Bar */}
+              <Input
                 type="text"
                 variant="filled"
                 border="1px solid #003366"
@@ -89,17 +91,18 @@ const Navbar = () => {
                 autoComplete="off"
                 readOnly
                 onFocus={(e) => e.target.removeAttribute("readOnly")}
+                _focus={{ backgroundColor: "white" }}
               />
-            <IconButton
-              aria-label="Search"
-              icon={<FaSearch />}
-              bg="#003366" 
-              color="white"
-              borderRadius="0 10px 10px 0" 
-              _hover={{ backgroundColor: "#002147" }} 
-            />
-          </Box>
-        </Flex>
+              <IconButton
+                aria-label="Search"
+                icon={<FaSearch />}
+                bg="#003366"
+                color="white"
+                borderRadius="0 10px 10px 0"
+                _hover={{ backgroundColor: "#002147" }}
+              />
+            </Box>
+          </Flex>
         ) : (
           <Flex align="center">
             <IconButton
@@ -114,61 +117,62 @@ const Navbar = () => {
           </Flex>
         )}
 
-        {isMobile &&
-          location.pathname === "/home" && (
-            <Box>
-              {showSearchBar ? (
-                <Flex align="center">
-                  <Box>
-                    {/* Search Bar */}
-                    <Input
-                      type="text"
-                      variant="filled"
-                      border="1px solid #003366"
-                      fontSize="0.8rem"
-                      m="0 2rem"
-                      color="#003366"
-                      placeholder="Find your new Skill!"
-                      borderRadius="10px 0 0px 10px"
-                      _placeholder={{
-                        color: "#555454",
-                        letterSpacing: "0.5px",
-                      }}
-                    />
-                  </Box>
-                  <IconButton
-                    aria-label="Search"
-                    icon={<FaSearch />}
-                    bg="#003366"
-                    onClick={handleShowSearchBar}
-                    color="white"
-                    borderRightRadius="7px"
-                    borderRadius="0px 10px 10px 0px"
+        {isMobile && location.pathname === "/home" && (
+          <Box>
+            {showSearchBar ? (
+              <Flex align="center">
+                <Box>
+                  {/* Search Bar */}
+                  <Input
+                    type="text"
+                    variant="filled"
+                    border="1px solid #003366"
+                    fontSize="0.8rem"
+                    m="0 2rem"
+                    color="#003366"
+                    placeholder="Find your new Skill!"
+                    borderRadius="10px 0 0px 10px"
+                    _placeholder={{
+                      color: "#555454",
+                      letterSpacing: "0.5px",
+                    }}
                   />
-                </Flex>
-              ) : (
+                </Box>
                 <IconButton
                   aria-label="Search"
                   icon={<FaSearch />}
-                  color="white"
-                  borderRadius="7px"
                   bg="#003366"
                   onClick={handleShowSearchBar}
-                  _hover={{ backgroundColor: "#002147", color: "white" }}
+                  color="white"
+                  borderRightRadius="7px"
+                  borderRadius="0px 10px 10px 0px"
                 />
-              )}
-            </Box>
-          )}
+              </Flex>
+            ) : (
+              <IconButton
+                aria-label="Search"
+                icon={<FaSearch />}
+                color="white"
+                borderRadius="7px"
+                bg="#003366"
+                onClick={handleShowSearchBar}
+                _hover={{ backgroundColor: "#002147", color: "white" }}
+              />
+            )}
+          </Box>
+        )}
 
         {!isMobile && (
-          <Flex align="center">
+          <Flex align="center" pr="16px">
             <Box mr={4}>
               <Link
                 _hover={{ color: "#002147", textDecoration: "underline" }}
                 href="/Teachme"
                 color="#003366"
               >
-                {user.role !== "teacher" && user.role !== "admin" && "Teach On SRM"}
+                {user.role !== "teacher" &&
+                  user.role !== "admin" &&
+                  "Teach On SRM"}
               </Link>
             </Box>
             <Box>
