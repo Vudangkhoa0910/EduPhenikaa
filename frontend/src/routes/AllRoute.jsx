@@ -32,8 +32,7 @@ import AddTeacherCourse from "../components/TeacherComponents/AddCourse";
 import AddTeacherVideos from "../components/TeacherComponents/AddTeacherVideos";
 import AddTeacher from "../components/TeacherComponents/AddTeacher";
 import GetTeacherVideos from "../components/TeacherComponents/GetTeacherVideos";
-
-
+import VideoDetail from "../components/singlePageComps/VideoDetail";
 const AllRoute = () => {
   return (
     <Routes>
@@ -60,9 +59,9 @@ const AllRoute = () => {
         path="/admin/courses"
         element={
           <PrivateRoutes>
-          <AdminRoute>
-          <Courses />
-          </AdminRoute>
+            <AdminRoute>
+              <Courses />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -71,9 +70,9 @@ const AllRoute = () => {
         path="/admin/edit/:id"
         element={
           <PrivateRoutes>
-          <AdminRoute>
-          <EditPage />
-          </AdminRoute>
+            <AdminRoute>
+              <EditPage />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -81,9 +80,9 @@ const AllRoute = () => {
         path="/admin/addCourse"
         element={
           <PrivateRoutes>
-          <AdminRoute>
-          <AddCourse />
-          </AdminRoute>
+            <AdminRoute>
+              <AddCourse />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -92,9 +91,9 @@ const AllRoute = () => {
         path="/admin/Add"
         element={
           <PrivateRoutes>
-          <AdminRoute>
-          <Add/>
-          </AdminRoute>
+            <AdminRoute>
+              <Add />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -111,9 +110,9 @@ const AllRoute = () => {
         path="/admin/discount"
         element={
           <PrivateRoutes>
-          <AdminRoute>
-          <Discount />
-          </AdminRoute>
+            <AdminRoute>
+              <Discount />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -121,9 +120,9 @@ const AllRoute = () => {
         path="/admin/statistic"
         element={
           <PrivateRoutes>
-           <AdminRoute>
-           <Statistics />
-           </AdminRoute>
+            <AdminRoute>
+              <Statistics />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -132,7 +131,7 @@ const AllRoute = () => {
         element={
           <PrivateRoutes>
             <AdminRoute>
-            <GiftCard />
+              <GiftCard />
             </AdminRoute>
           </PrivateRoutes>
         }
@@ -141,9 +140,9 @@ const AllRoute = () => {
         path="/admin/setting"
         element={
           <PrivateRoutes>
-           <AdminRoute>
-           <Setting />
-           </AdminRoute>
+            <AdminRoute>
+              <Setting />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -152,7 +151,7 @@ const AllRoute = () => {
         element={
           <PrivateRoutes>
             <AdminRoute>
-            <Users />
+              <Users />
             </AdminRoute>
           </PrivateRoutes>
         }
@@ -161,9 +160,9 @@ const AllRoute = () => {
         path="/admin/users/add"
         element={
           <PrivateRoutes>
-           <AdminRoute>
-           <AddUser />
-           </AdminRoute>
+            <AdminRoute>
+              <AddUser />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -172,7 +171,7 @@ const AllRoute = () => {
         element={
           <PrivateRoutes>
             <AdminRoute>
-            <EditUser />
+              <EditUser />
             </AdminRoute>
           </PrivateRoutes>
         }
@@ -182,9 +181,9 @@ const AllRoute = () => {
         path="/Teacher/edit/:id"
         element={
           <PrivateRoutes>
-          <TeacherRoute>
-          <EditPage />
-          </TeacherRoute>
+            <TeacherRoute>
+              <EditPage />
+            </TeacherRoute>
           </PrivateRoutes>
         }
       />
@@ -193,9 +192,9 @@ const AllRoute = () => {
         path="/admin/videos"
         element={
           <PrivateRoutes>
-           <AdminRoute>
-           <GetVideos />
-           </AdminRoute>
+            <AdminRoute>
+              <GetVideos />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -204,9 +203,9 @@ const AllRoute = () => {
         path="/admin/videos/add/:courseId"
         element={
           <PrivateRoutes>
-          <AdminRoute>
-          <AddVideo />
-          </AdminRoute>
+            <AdminRoute>
+              <AddVideo />
+            </AdminRoute>
           </PrivateRoutes>
         }
       />
@@ -215,22 +214,22 @@ const AllRoute = () => {
       <Route path="*" element={<PageNotFound />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
-  
+
       <Route
         path="/Teachme"
         element={
           <PrivateRoutes>
-            <TeachVerify/>
+            <TeachVerify />
           </PrivateRoutes>
         }
       />
-      
+
       <Route
         path="/TeacherDashboard"
         element={
           <PrivateRoutes>
             <TeacherRoute>
-            <TeacherDashboard/>
+              <TeacherDashboard />
             </TeacherRoute>
           </PrivateRoutes>
         }
@@ -241,7 +240,7 @@ const AllRoute = () => {
         element={
           <PrivateRoutes>
             <TeacherRoute>
-            <TeacherCourses/>
+              <TeacherCourses />
             </TeacherRoute>
           </PrivateRoutes>
         }
@@ -251,9 +250,9 @@ const AllRoute = () => {
         path="/Teacher/videos/add/:courseId"
         element={
           <PrivateRoutes>
-          <TeacherRoute>
-          <AddTeacherVideos />
-          </TeacherRoute>
+            <TeacherRoute>
+              <AddTeacherVideos />
+            </TeacherRoute>
           </PrivateRoutes>
         }
       />
@@ -262,9 +261,9 @@ const AllRoute = () => {
         path="/Teacher/Add"
         element={
           <PrivateRoutes>
-          <TeacherRoute>
-          <AddTeacher/>
-          </TeacherRoute>
+            <TeacherRoute>
+              <AddTeacher />
+            </TeacherRoute>
           </PrivateRoutes>
         }
       />
@@ -274,7 +273,7 @@ const AllRoute = () => {
         element={
           <PrivateRoutes>
             <TeacherRoute>
-            <AddTeacherCourse/>
+              <AddTeacherCourse />
             </TeacherRoute>
           </PrivateRoutes>
         }
@@ -284,13 +283,12 @@ const AllRoute = () => {
         path="/Teacher/videos"
         element={
           <PrivateRoutes>
-           <TeacherRoute>
-           <GetTeacherVideos/>
-           </TeacherRoute>
+            <TeacherRoute>
+              <GetTeacherVideos />
+            </TeacherRoute>
           </PrivateRoutes>
         }
       />
-
 
       <Route
         path="/payment"
@@ -305,6 +303,15 @@ const AllRoute = () => {
         element={
           <PrivateRoutes>
             <ProfilePage />
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/video-detail"
+        element={
+          <PrivateRoutes>
+            <VideoDetail />
           </PrivateRoutes>
         }
       />
