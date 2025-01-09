@@ -19,6 +19,7 @@ import { BiUserCircle } from "react-icons/bi";
 import { FaUserShield } from "react-icons/fa";
 import { FiMoreVertical } from "react-icons/fi";
 import { capitalizeFirstLetter } from "../../Redux/UserReducer/action";
+import { FaUser, FaTachometerAlt, FaCog } from "react-icons/fa";
 const Dropdown = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -87,13 +88,20 @@ const Dropdown = () => {
               </Box>
             </Flex>
           </MenuButton>
-          <MenuList p={5} w='25vw' overflow={userStore?.role==='admin' ? 'scroll' : ''} h={userStore?.role==='admin' ? '90vh' : ''} pb='4'>
+          <MenuList
+            p={5}
+            w="20vw"
+            overflow={userStore?.role === "admin" ? "scroll" : ""}
+            h={userStore?.role === "admin" ? "90vh" : ""}
+            pb="4"
+          >
             {/* user options  */}
-            <Box >
+            <Box>
               <Flex justify="space-between" alignItems="center">
                 <Box p="1.5rem 0">
-                  {userStore?.role === "admin" || userStore?.role==='teacher' ? (
-                    <Flex alignItems={"center"} >
+                  {userStore?.role === "admin" ||
+                  userStore?.role === "teacher" ? (
+                    <Flex alignItems={"center"}>
                       <Box>
                         <FaUserShield size="2rem" color="#0056d2" />
                         <Text fontSize="0.6rem" fontWeight="bold">
@@ -132,6 +140,8 @@ const Dropdown = () => {
                   onClick={handleProfileClick}
                   fontWeight="500"
                 >
+                  <FaUser style={{ marginRight: "8px" }} />{" "}
+                  {/* Icon cho "Your Account" */}
                   Your Account
                 </MenuItem>
 
@@ -141,15 +151,23 @@ const Dropdown = () => {
                     fontWeight="500"
                     borderTop="1px solid #D7DBDD"
                   >
+                    <FaTachometerAlt style={{ marginRight: "8px" }} />{" "}
+                    {/* Icon cho "DashBoard" */}
                     DashBoard
                   </MenuItem>
                 </Link>
+
+                <MenuItem p="0.7rem 0" fontWeight="500">
+                  <FaCog style={{ marginRight: "8px" }} />{" "}
+                  {/* Icon cho "Setting" */}
+                  Setting
+                </MenuItem>
               </Box>
             )}
             {/* admin options */}
 
             {userStore?.role === "admin" && (
-              <Box >
+              <Box>
                 <Link to="/profile">
                   <MenuItem
                     p="0.7rem 0"
@@ -254,8 +272,8 @@ const Dropdown = () => {
 
             {/* Teacher options */}
 
-            {userStore?.role==='teacher' && (
-              <Box >
+            {userStore?.role === "teacher" && (
+              <Box>
                 <Link to="/profile">
                   <MenuItem
                     p="0.7rem 0"
