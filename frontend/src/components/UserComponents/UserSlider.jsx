@@ -38,11 +38,8 @@ const UserSlider = () => {
     "SRM unlocks access to prestigious educational institutions, elevating your academic journey to new heights. With SRM, you can explore a world of educational opportunities, expanding your knowledge and skills in various fields.",
     "Experience dynamic online classes on SRM's intuitive platform, tailored to modern learners' needs. SRM's user-friendly interface and interactive features make online learning engaging and effective, helping students succeed in today's digital age.",
     "Access meticulously crafted study notes on SRM to enhance your understanding and retention of course materials. SRM's comprehensive study resources empower students to excel in their studies and gain a deeper understanding of their subjects.",
-    "SRM is your gateway to a successful career, offering the knowledge and skills needed for professional excellence. With SRM, you can prepare for a bright future and achieve your career goals through high-quality education and training."
+    "SRM is your gateway to a successful career, offering the knowledge and skills needed for professional excellence. With SRM, you can prepare for a bright future and achieve your career goals through high-quality education and training.",
   ];
-  
-  
-  
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -73,18 +70,40 @@ const UserSlider = () => {
   }, []);
   return (
     <>
-      <Container mt="100px" maxW="container.xxl" >
-        <Flex direction="column" align="center" bg='#F7F3EA'>
+      <Container mt="100px" maxW="container.xxl">
+        <Flex direction="column" align="center" bg="#F7F3EA">
           <Flex align="center" justify="space-between" mb={4}>
-            <Button colorScheme="blue" borderRadius={"50%"} onClick={handlePrevious}>
-              <ArrowLeftIcon />
+            <Button
+              colorScheme="blue"
+              borderRadius="50%"
+              onClick={handlePrevious}
+              size="lg"
+              p={4} // Đảm bảo nút có đủ không gian cho icon
+              _hover={{
+                bg: "blue.600", // Màu khi hover
+                transform: "scale(1.1)", // Nút phóng to nhẹ khi hover
+                boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)", // Bóng đổ khi hover
+              }}
+              _active={{
+                bg: "blue.700", // Màu khi click
+                transform: "scale(1)", // Kích thước không thay đổi khi nhấn
+              }}
+              _focus={{
+                outline: "none", // Xóa viền focus
+              }}
+              transition="all 0.2s ease-in-out"
+              position="relative"
+            >
+              <ArrowLeftIcon boxSize={6} />
             </Button>
-            <Box position="relative" p='2'>
+
+            <Box position="relative" p="2">
               <Image
                 w={"2000px"}
                 h={"400px"}
                 fit="cover"
                 src={`${images[currentIndex]}`}
+                borderRadius="16px"
               />
               <Box
                 position="absolute"
@@ -108,8 +127,28 @@ const UserSlider = () => {
                 </Text>
               </Box>
             </Box>
-            <Button colorScheme="blue" borderRadius={"50%"} onClick={handleNext}>
-              <ArrowRightIcon />
+            <Button
+              colorScheme="blue"
+              borderRadius="50%"
+              onClick={handleNext}
+              size="lg"
+              p={4} // Đảm bảo nút có đủ không gian cho icon
+              _hover={{
+                bg: "blue.600", // Màu khi hover
+                transform: "scale(1.1)", // Nút phóng to nhẹ khi hover
+                boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)", // Bóng đổ khi hover
+              }}
+              _active={{
+                bg: "blue.700", // Màu khi click
+                transform: "scale(1)", // Kích thước không thay đổi khi nhấn
+              }}
+              _focus={{
+                outline: "none", // Xóa viền focus
+              }}
+              transition="all 0.2s ease-in-out"
+              position="relative"
+            >
+              <ArrowRightIcon boxSize={6} />
             </Button>
           </Flex>
 
@@ -125,20 +164,30 @@ const UserSlider = () => {
             </SliderTrack>
             <SliderThumb /> */}
           </Slider>
-          <Box pb='3rem' w='80%' m='auto' p='4'>
-          <Text>
-            <Heading
-              size="md"
-              fontWeight='500'
-              letterSpacing="2px"
-              lineHeight='2rem'
-            >
-              {indexDescription[currentIndex]}
-            </Heading>
-          </Text>
-        </Box>
+          <Box
+            p="4"
+            w="90%"
+            m="auto"
+            textAlign="center"
+            bg="rgba(255, 255, 255, 0.8)"
+            borderRadius="8px"
+            boxShadow="lg"
+          >
+            <Text>
+              <Heading
+                size="md"
+                fontWeight="600"
+                letterSpacing="2px"
+                lineHeight="1.8rem"
+                color="gray.800"
+                mb={4} // Khoảng cách dưới tiêu đề
+                style={{ textShadow: "1px 1px 2px rgba(0, 0, 0, 0.3)" }} // Thêm hiệu ứng bóng cho tiêu đề
+              >
+                {indexDescription[currentIndex]}
+              </Heading>
+            </Text>
+          </Box>
         </Flex>
-        
       </Container>
     </>
   );
