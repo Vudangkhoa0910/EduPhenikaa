@@ -126,7 +126,7 @@ const AddTeacher = () => {
                         </Tr>
                       );
                     } else {
-                      return null; 
+                      return null; // Thêm đó
                     }
                   })
                 ) : (
