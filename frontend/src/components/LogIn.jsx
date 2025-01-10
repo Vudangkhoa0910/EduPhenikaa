@@ -46,7 +46,7 @@ const Login = () => {
   // will block the input element when click on backgrond
   function blockInput(event) {
     if (event.target === backgroundRef.current && !form.email) {
-      emailInput.current.style.display = "none";
+    emailInput.current.style.display = "none";
       emailbox.current.style.padding = "20px";
     }
     if (event.target === backgroundRef.current && !form.password) {

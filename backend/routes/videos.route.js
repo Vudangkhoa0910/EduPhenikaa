@@ -13,25 +13,25 @@ const videoRoute = express.Router();
 // EndPoint: /videos/
 // resticted to admin only
 // FRONTEND: WE can use to get all the videos uploaded in system for admin user only;
-// videoRoute.get('/', async (req,res)=>{
-//     const {page,limit,user} = req.query;
-//     console.log(user)
-//     try{
-//         if(req.body.role==='admin'){
-//         const videos = await VideoModel.find({});
-//         res.status(200).json(videos)
-//         }else if(user){
-//             const videos = await VideoModel.find({ teacherId: `ObjectId(${user})`});
-//             console.log(videos)
-//             res.status(200).json(videos);
-//         }else{
-//             res.status(401).json({error:"you don't have access for videos"})
-//         }
-//     }catch(err){
-//         console.log(err);
-//         res.status(400).json({message:'Something Went Wrong',error:err.message})
-//     }
-// })
+videoRoute.get('/', async (req,res)=>{
+    const {page,limit,user} = req.query;
+    console.log(user)
+    try{
+        if(req.body.role==='admin'){
+        const videos = await VideoModel.find({});
+        res.status(200).json(videos)
+        }else if(user){
+            const videos = await VideoModel.find({ teacherId: `ObjectId(${user})`});
+            console.log(videos)
+            res.status(200).json(videos);
+        }else{
+            res.status(401).json({error:"you don't have access for videos"})
+        }
+    }catch(err){
+        console.log(err);
+        res.status(400).json({message:'Something Went Wrong',error:err.message})
+    }
+})
 
 videoRoute.get('/', async (req, res) => {
     const { page, limit, user } = req.query;
