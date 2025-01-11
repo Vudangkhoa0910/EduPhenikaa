@@ -107,30 +107,36 @@ const AddTeacher = () => {
           gap={6}
         >
           {store && store.length > 0 ? (
-            store.map((el, i) => (
-              <Card key={i} borderRadius="lg" shadow="md" overflow="hidden">
-                <CardBody>
-                  <Stack spacing={3}>
-                    <Heading size="md">{el.title}</Heading>
-                    <Text>Date: {convertDateFormat(el.createdAt)}</Text>
-                    <Text>Category: {el.category}</Text>
-                    <Text>Description: {el.description}</Text>
-                    <Text>Price: ${el.price}</Text>
-                    <Text>Teacher: {el.teacher}</Text>
-                  </Stack>
-                </CardBody>
-                <CardFooter>
-                  <Button
-                    colorScheme="purple"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleVideos(el._id, el.title)}
-                  >
-                    Add Videos
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))
+            store.map((el, i) => {
+              if (el && el.title) {
+                return (
+                  <Card key={i} borderRadius="lg" shadow="md" overflow="hidden">
+                    <CardBody>
+                      <Stack spacing={3}>
+                        <Heading size="md">{el.title}</Heading>
+                        <Text>Date: {convertDateFormat(el.createdAt)}</Text>
+                        <Text>Category: {el.category}</Text>
+                        <Text>Description: {el.description}</Text>
+                        <Text>Price: ${el.price}</Text>
+                        <Text>Teacher: {el.teacher}</Text>
+                      </Stack>
+                    </CardBody>
+                    <CardFooter>
+                      <Button
+                        colorScheme="purple"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleVideos(el._id, el.title)}
+                      >
+                        Add Videos
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              } else {
+                return null; // If `el` or `el.title` is falsy, return nothing
+              }
+            })
           ) : (
             <Text>No courses available.</Text>
           )}
