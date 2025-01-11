@@ -1,8 +1,6 @@
 // import React from 'react';
 // import { Box, Flex, Grid, Icon, Text } from "@chakra-ui/react";
-// import TeacherNavTop from "./TeacherNavTop"; 
-
-
+// import TeacherNavTop from "./TeacherNavTop";
 
 // const TeacherDashboard = () => {
 //   // Dummy data for courses and enrolled users
@@ -44,7 +42,7 @@
 
 //             {/* Bar graph */}
 //             {/* Your existing Bar graph code */}
-  
+
 //             {/* Pie graph */}
 //             {/* Your existing Pie graph code */}
 //           </Box>
@@ -70,15 +68,22 @@ import {
 } from "chart.js";
 import TeacherNavTop from "./TeacherNavTop";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend, ArcElement);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const generateFakeData = (count) => {
   const data = [];
   for (let i = 1; i <= count; i++) {
     data.push({
       id: i,
-      title: `Course ${String.fromCharCode(64 + i)}`, 
-      enrolledUsers: Math.floor(Math.random() * 91) + 10, 
+      title: `Course ${String.fromCharCode(64 + i)}`,
+      enrolledUsers: Math.floor(Math.random() * 91) + 10,
     });
   }
   return data;
@@ -95,11 +100,9 @@ const TeacherDashboard = () => {
         label: "Enrolled Users",
         data: courses.map((course) => course.enrolledUsers),
         backgroundColor: courses.map(
-          () => `hsl(${Math.random() * 360}, 60%, 70%)` 
+          () => `hsl(${Math.random() * 360}, 60%, 70%)`
         ),
-        borderColor: courses.map(
-          () => `hsl(${Math.random() * 360}, 50%, 50%)` 
-        ),
+        borderColor: courses.map(() => `hsl(${Math.random() * 360}, 50%, 50%)`),
         borderWidth: 1,
       },
     ],
@@ -121,7 +124,7 @@ const TeacherDashboard = () => {
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: false, 
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
@@ -131,8 +134,22 @@ const TeacherDashboard = () => {
 
   return (
     <Box>
-      <TeacherNavTop />
-      <Box p={5}>
+      {/* Đẩy TeacherNavTop xuống và làm nổi bật */}
+      <Box
+        position="fixed"
+        top="0"
+        w="100%"
+        zIndex="20"
+        bg="white"
+        px={10}
+        boxShadow="lg"
+      >
+        <TeacherNavTop />
+      </Box>
+
+      <Box p={5} mt="80px">
+        {" "}
+        {/* Thêm mt để đẩy phần bên dưới tránh bị che khuất */}
         {/* Danh sách các khóa học */}
         <Grid
           templateColumns={{
@@ -156,7 +173,6 @@ const TeacherDashboard = () => {
             </Box>
           ))}
         </Grid>
-
         {/* Biểu đồ */}
         <Grid
           templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }}
