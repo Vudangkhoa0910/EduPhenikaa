@@ -41,48 +41,83 @@ const DashBoard = () => {
     setCourses((prevCourses) => sortArray(prevCourses, "title", order));
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
+  const [instructorRequests, setInstructorRequests] = useState([]);
 
-        const token = JSON.parse(localStorage.getItem("user"))?.token;
-        if (!token) {
-          console.error("Token is missing. Please login.");
-          setIsError(true);
-          return;
-        }
+// Fetch instructor requests
+const fetchInstructorRequests = async () => {
+  try {
+    setIsLoading(true);
 
-        console.log("Fetching data with token:", token);
+    const token = JSON.parse(localStorage.getItem("user"))?.token;
+    if (!token) {
+      console.error("Token is missing. Please login.");
+      setIsError(true);
+      return;
+    }
 
-        const [userRes, videoRes, courseRes] = await Promise.all([
-          fetch(`${BASE_URL}/users`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${BASE_URL}/videos`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${BASE_URL}/courses`, { headers: { Authorization: `Bearer ${token}` } }),
-        ]);
+    const response = await fetch(`${BASE_URL}/instructors/instructorrequests`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-        if (!userRes.ok) throw new Error(`User API Error: ${userRes.statusText}`);
-        if (!videoRes.ok) throw new Error(`Video API Error: ${videoRes.statusText}`);
-        if (!courseRes.ok) throw new Error(`Course API Error: ${courseRes.statusText}`);
+    if (!response.ok) throw new Error(`Instructor API Error: ${response.statusText}`);
 
-        const usersData = await userRes.json();
-        const videosData = await videoRes.json();
-        const coursesData = await courseRes.json();
+    const requestsData = await response.json();
+    console.log("Fetched instructor requests data:", requestsData);
+    setInstructorRequests(requestsData.requests || []);
+    setIsLoading(false);
+  } catch (error) {
+    setIsError(true);
+    setIsLoading(false);
+    console.error("Error fetching instructor requests:", error);
+  }
+};
 
-        console.log("Fetched users data:", usersData);
-        setUsers(usersData.users || []);
-        setVideos(videosData || []);
-        setCourses(coursesData.course || []);
-        setIsLoading(false);
-      } catch (error) {
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+
+      const token = JSON.parse(localStorage.getItem("user"))?.token;
+      if (!token) {
+        console.error("Token is missing. Please login.");
         setIsError(true);
-        setIsLoading(false);
-        console.error("Error fetching data:", error);
+        return;
       }
-    };
 
-    fetchData();
-  }, []);
+      console.log("Fetching data with token:", token);
+
+      const [userRes, videoRes, courseRes] = await Promise.all([
+        fetch(`${BASE_URL}/users`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${BASE_URL}/videos`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${BASE_URL}/courses`, { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+
+      if (!userRes.ok) throw new Error(`User API Error: ${userRes.statusText}`);
+      if (!videoRes.ok) throw new Error(`Video API Error: ${videoRes.statusText}`);
+      if (!courseRes.ok) throw new Error(`Course API Error: ${courseRes.statusText}`);
+
+      const usersData = await userRes.json();
+      const videosData = await videoRes.json();
+      const coursesData = await courseRes.json();
+
+      console.log("Fetched users data:", usersData);
+      setUsers(usersData.users || []);
+      setVideos(videosData || []);
+      setCourses(coursesData.course || []);
+
+      // Gọi fetchInstructorRequests để lấy dữ liệu yêu cầu
+      await fetchInstructorRequests();
+
+      setIsLoading(false);
+    } catch (error) {
+      setIsError(true);
+      setIsLoading(false);
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  fetchData();
+}, []);
 
   if (isLoading) return <Text>Loading...</Text>;
   if (isError) return <Text>Error loading data!</Text>;
@@ -175,12 +210,13 @@ const DashBoard = () => {
               onClick: () => handleSectionClick("courses"),
             },
             {
-              title: "Total WatchTime",
-              count: "999+ hrs",
+              title: "Instructor Requests",
+              count: instructorRequests.length,
               percent: "+45%",
               icon: FaVideo,
               bgColor: "#F56565",
-            },
+              onClick: () => handleSectionClick("instructorRequests"),
+            }            
           ].map((item, index) => (
             <Box
               key={index}
@@ -295,6 +331,44 @@ const DashBoard = () => {
                 <Text>Price: ${course.price}</Text>
               </Box>
             ))}
+          </Box>
+        )}
+
+        {selectedSection === "instructorRequests" && (
+          <Box mt={5}>
+            <Text fontSize="2xl" fontWeight="bold" mb={3}>
+              Instructor Requests
+            </Text>
+            {instructorRequests.length > 0 ? (
+              instructorRequests.map((request, index) => (
+                <Box
+                  key={request._id}
+                  p={4}
+                  mb={3}
+                  borderWidth="1px"
+                  borderRadius="md"
+                  bg={isDarkMode ? "#2D3748" : "white"}
+                  color={isDarkMode ? "white" : "black"}
+                >
+                  <Text fontWeight="bold">
+                    {index + 1}. {request.name}
+                  </Text>
+                  <Text>Age: {request.age}</Text>
+                  <Text>Profession: {request.profession}</Text>
+                  <Text>Field: {request.field}</Text>
+                  <Text>Experience: {request.experience}</Text>
+                  <Text>Description: {request.description}</Text>
+                  <Text>
+                    CV:{" "}
+                    <a href={request.cv} target="_blank" rel="noopener noreferrer" style={{ color: "blue" }}>
+                      View CV
+                    </a>
+                  </Text>
+                </Box>
+              ))
+            ) : (
+              <Text>No instructor requests found.</Text>
+            )}
           </Box>
         )}
       </Grid>
