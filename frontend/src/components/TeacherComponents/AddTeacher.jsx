@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  Flex,
   Grid,
   Select,
-  Text,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
   useBreakpointValue,
-  Card,
-  CardBody,
-  CardFooter,
-  Heading,
-  Stack,
 } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import convertDateFormat, {
   getProduct,
 } from "../../Redux/TeacherReducer/action";
 import Pagination from "../Adminitems/Pagination";
-import TeacherNavTop from "./TeacherNavTop";
 
 const AddTeacher = () => {
   const store = useSelector((store) => store.TeacherReducer.data);
@@ -28,144 +26,146 @@ const AddTeacher = () => {
   const [search, setSearch] = useState("");
   const [order, setOrder] = useState("");
   const limit = 4;
+  const tableSize = useBreakpointValue({ base: "sm", sm: "md", md: "lg" });
+  const courseSize = useBreakpointValue({ base: "md", sm: "lg", md: "xl" });
 
-  const cardSize = useBreakpointValue({ base: "sm", md: "md" });
+  const handleSelect = (e) => {
+    const { value } = e.target;
+    setOrder(value);
+  };
 
   useEffect(() => {
     dispatch(getProduct(page, limit, search, order));
-  }, [page, search, order]);
+  }, [page, search, order, limit]);
 
   const navigate = useNavigate();
-
-  const handleSearch = (e) => setSearch(e.target.value);
-
-  const handleSelect = (e) => setOrder(e.target.value);
 
   const handleVideos = (id, title) => {
     navigate(`/Teacher/videos/add/${id}`, { state: { id, title } });
   };
 
-  const handlePageChange = (page) => setPage(page);
+  const handlePageChange = (page) => {
+    setPage(page);
+  };
 
-  const handlePageButton = (val) => setPage((prev) => prev + val);
+  const handlePageButton = (val) => {
+    setPage((prev) => prev + val);
+  };
+
+  const count = 4;
 
   return (
-    <Box w="100%" minH="100vh" bg="gray.50">
-      {/* TeacherNavTop with fixed position */}
-      <Box position="fixed" top="0" w="100%" zIndex="20" bg="white" px={10}>
-        <TeacherNavTop handleSearch={handleSearch} />
-      </Box>
-
-      {/* Header Section */}
-      <Flex
-        justify="space-between"
-        align="center"
-        bg="purple.500"
-        color="white"
-        p={5}
-        borderRadius="md"
-        mb={5}
-        position="sticky"
-        top="0"
-        mt="20"
-        zIndex="10" // Lower zIndex than TeacherNavTop to ensure it stays under
-      >
-        <Heading size="lg">Welcome to Courses</Heading>
-        <Link to="/Teacher/addCourse">
-          <Button colorScheme="teal" size="md">
-            Create New Course
-          </Button>
-        </Link>
-      </Flex>
-
-      {/* Filter Section */}
-      <Flex justify="space-between" align="center" mb={5}>
-        <Text fontSize="lg" fontWeight="bold">
-          Available Courses
-        </Text>
-        <Select w="200px" onChange={handleSelect} placeholder="Sort by Price">
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </Select>
-      </Flex>
-
-      {/* Scrollable Content Section */}
-      <Box
-        w="100%"
-        h="calc(100vh - 200px)" // Adjust height for scrollable area
-        overflowY="auto"
-        p={5}
-        mt={20} // Add margin top to avoid overlap with TeacherNavTop
-      >
-        {/* Course Cards */}
-        <Grid
-          templateColumns={{
-            base: "1fr",
-            md: "repeat(2, 1fr)",
-            xl: "repeat(3, 1fr)",
-          }}
-          gap={6}
-        >
-          {store && store.length > 0 ? (
-            store.map((el, i) => {
-              if (el && el.title) {
-                return (
-                  <Card key={i} borderRadius="lg" shadow="md" overflow="hidden">
-                    <CardBody>
-                      <Stack spacing={3}>
-                        <Heading size="md">{el.title}</Heading>
-                        <Text>Date: {convertDateFormat(el.createdAt)}</Text>
-                        <Text>Category: {el.category}</Text>
-                        <Text>Description: {el.description}</Text>
-                        <Text>Price: ${el.price}</Text>
-                        <Text>Teacher: {el.teacher}</Text>
-                      </Stack>
-                    </CardBody>
-                    <CardFooter>
-                      <Button
-                        colorScheme="purple"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleVideos(el._id, el.title)}
-                      >
-                        Add Videos
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
-              } else {
-                return null; // If `el` or `el.title` is falsy, return nothing
-              }
-            })
-          ) : (
-            <Text>No courses available.</Text>
-          )}
-        </Grid>
-
-        {/* Pagination Section */}
-        <Flex justify="center" align="center" mt={10}>
-          <Button
-            disabled={page <= 1}
-            onClick={() => handlePageButton(-1)}
-            mr={2}
+    <Grid className="Nav" h="100vh" w="100%" placeItems="center" px={4}>
+      <Box w="100%" maxW="1200px" mt="90px">
+        <Box className={`course ${courseSize}`}>
+          <Grid
+            templateColumns={{
+              xl: "1fr",
+              lg: "1fr",
+              base: "1fr",
+            }}
+            gap={6}
+            mb={6}
           >
-            Prev
-          </Button>
-          <Pagination
-            totalCount={4}
-            current_page={page}
-            handlePageChange={handlePageChange}
-          />
-          <Button
-            disabled={page >= 4}
-            onClick={() => handlePageButton(1)}
-            ml={2}
+            <Box display="flex" justifyContent="center" gap={4}>
+              <Select w="auto" minW="300px" onChange={handleSelect}>
+                <option value="asc">Price Sort in Ascending Order</option>
+                <option value="desc">Price Sort in Descending Order</option>
+              </Select>
+              <Link to="/Teacher/addCourse">
+                <Button bg="blue.500" color="white" _hover={{ bg: "blue.600" }}>
+                  Create
+                </Button>
+              </Link>
+            </Box>
+          </Grid>
+
+          <Box
+            w="100%"
+            overflowX="auto"
+            borderRadius="lg"
+            border="1px solid #e2e8f0"
+            p={6}
+            bg="white"
+            boxShadow="sm"
           >
-            Next
-          </Button>
-        </Flex>
+            <Table
+              variant="striped"
+              borderRadius="md"
+              w="100%"
+              size={tableSize}
+            >
+              <Thead>
+                <Tr>
+                  <Th>Title</Th>
+                  <Th>Date</Th>
+                  <Th>Category</Th>
+                  <Th>Description</Th>
+                  <Th>Price</Th>
+                  <Th>Teacher</Th>
+                  <Th>Actions</Th>
+                </Tr>
+              </Thead>
+              {store?.length > 0 ? (
+                store.map((el, i) => (
+                  <Tbody key={i}>
+                    <Tr>
+                      <Td>{el.title || "N/A"}</Td>
+                      <Td>{convertDateFormat(el.createdAt) || "N/A"}</Td>
+                      <Td>{el.category || "N/A"}</Td>
+                      <Td>{el.description || "N/A"}</Td>
+                      <Td>{el.price || "N/A"}</Td>
+                      <Td>{el.teacher || "N/A"}</Td>
+                      <Td>
+                        <Button
+                          onClick={() => handleVideos(el._id, el.title)}
+                          bg="green.500"
+                          color="white"
+                          _hover={{ bg: "green.600" }}
+                        >
+                          Add Videos
+                        </Button>
+                      </Td>
+                    </Tr>
+                  </Tbody>
+                ))
+              ) : (
+                <Tbody>
+                  <Tr>
+                    <Td colSpan="7" textAlign="center">
+                      No data available
+                    </Td>
+                  </Tr>
+                </Tbody>
+              )}
+            </Table>
+          </Box>
+
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            gap={4}
+            mt={6}
+          >
+            <Button disabled={page <= 1} onClick={() => handlePageButton(-1)}>
+              Prev
+            </Button>
+            <Pagination
+              totalCount={count}
+              current_page={page}
+              handlePageChange={handlePageChange}
+            />
+            <Button
+              disabled={page >= count}
+              onClick={() => handlePageButton(1)}
+            >
+              Next
+            </Button>
+          </Box>
+        </Box>
       </Box>
-    </Box>
+    </Grid>
   );
 };
 
