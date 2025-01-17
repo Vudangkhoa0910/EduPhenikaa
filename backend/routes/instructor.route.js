@@ -5,14 +5,11 @@ const router = express.Router();
 // Endpoint để đăng ký làm giảng viên
 router.post("/register", async (req, res) => {
   try {
-    console.log("Validated data:", req.body);
+    const { name, age, profession, field, experience, description, cv, userId } = req.body;
+    console.log("Debug: Received User ID:", userId);
 
-    const { name, age, profession, field, experience, description, cv } = req.body;
-
-    // Kiểm tra dữ liệu nhập
-    if (!name || !age || !profession || !field || !experience || !description || !cv) {
-      console.log("Validation failed:", { name, age, profession, field, experience, description, cv });
-      return res.status(400).json({ message: "All fields are required" });
+    if (!name || !age || !profession || !field || !experience || !description || !cv || !userId) {
+      return res.status(400).json({ message: "All fields are required, including userId." });
     }
 
     const newRequest = new InstructorRequest({
@@ -23,6 +20,7 @@ router.post("/register", async (req, res) => {
       experience,
       description,
       cv,
+      userId, // Lưu userId vào database
     });
 
     await newRequest.save();
@@ -47,6 +45,26 @@ router.get("/instructorrequests", async (req, res) => {
     res.status(200).json({ requests });
   } catch (error) {
     console.error("Error occurred while fetching instructor requests:", error);
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});
+
+// Endpoint để xóa yêu cầu giảng viên
+router.delete("/instructorrequests/:requestId", async (req, res) => {
+  const { requestId } = req.params;
+
+  try {
+    const request = await InstructorRequest.findByIdAndDelete(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.status(200).json({ message: "Instructor request deleted" });
+  } catch (error) {
+    console.error("Error occurred while deleting the request:", error);
     res.status(500).json({
       message: "Internal server error",
       error: error.message,

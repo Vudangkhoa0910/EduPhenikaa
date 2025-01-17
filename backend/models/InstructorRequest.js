@@ -7,10 +7,10 @@ const InstructorRequestSchema = new mongoose.Schema({
   field: { type: String, required: true },
   experience: { type: String, required: true },
   description: { type: String, required: true },
-  cv: { type: String, required: true }, // Đường dẫn hoặc link đến file CV
+  cv: { type: String, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Liên kết với user
 });
 
 const InstructorRequest = mongoose.model("InstructorRequest", InstructorRequestSchema);
 
 module.exports = InstructorRequest;
-
