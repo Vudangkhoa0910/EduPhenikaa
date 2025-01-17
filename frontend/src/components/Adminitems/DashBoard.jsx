@@ -15,6 +15,7 @@ const DashBoard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [selectedSection, setSelectedSection] = useState(null);
+  const [sortOrder, setSortOrder] = useState("ASC");
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
@@ -41,6 +42,11 @@ const DashBoard = () => {
     setCourses((prevCourses) => sortArray(prevCourses, "title", order));
   };
 
+  const handleSortRequests = (order) => {
+    setInstructorRequests((prevRequests) => sortArray(prevRequests, "name", order));
+    setSortOrder(order);
+  };
+
   const [instructorRequests, setInstructorRequests] = useState([]);
 
 // Fetch instructor requests
@@ -49,6 +55,7 @@ const fetchInstructorRequests = async () => {
     setIsLoading(true);
 
     const token = JSON.parse(localStorage.getItem("user"))?.token;
+    
     if (!token) {
       console.error("Token is missing. Please login.");
       setIsError(true);
@@ -71,6 +78,58 @@ const fetchInstructorRequests = async () => {
     console.error("Error fetching instructor requests:", error);
   }
 };
+
+const handleApproveRequest = async (userId) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user"))?.token;
+    if (!token) {
+      alert("Token is missing. Please login.");
+      return;
+    }
+
+    const response = await fetch(`${BASE_URL}/users/${userId}/promote`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error(`Error promoting user: ${response.statusText}`);
+
+    alert("User promoted to teacher successfully!");
+    await fetchInstructorRequests(); // Refresh the instructor requests
+  } catch (error) {
+    console.error("Error promoting user:", error);
+    alert(`Failed to promote user: ${error.message}`);
+  }
+};
+
+const handleRejectRequest = async (requestId) => {
+  try {
+    const token = JSON.parse(localStorage.getItem("user"))?.token;
+    if (!token) {
+      alert("Token is missing. Please login.");
+      return;
+    }
+
+    const response = await fetch(`${BASE_URL}/instructors/instructorrequests/${requestId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) throw new Error(`Error rejecting request: ${response.statusText}`);
+
+    alert("Instructor request rejected successfully!");
+    await fetchInstructorRequests(); // Refresh the instructor requests
+  } catch (error) {
+    console.error("Error rejecting request:", error);
+    alert(`Failed to reject request: ${error.message}`);
+  }
+};
+
 
 useEffect(() => {
   const fetchData = async () => {
@@ -157,6 +216,12 @@ useEffect(() => {
             </Button>
             <Button colorScheme="blue" onClick={() => handleSortVideos("DES")}>
               Sort Videos DES
+            </Button>
+            <Button colorScheme="teal" onClick={() => handleSortRequests("ASC")}>
+              Sort Instructor Requests ASC
+            </Button>
+            <Button colorScheme="teal" onClick={() => handleSortRequests("DES")}>
+              Sort Instructor Requests DES
             </Button>
           </Flex>
 
@@ -334,43 +399,51 @@ useEffect(() => {
           </Box>
         )}
 
-        {selectedSection === "instructorRequests" && (
-          <Box mt={5}>
-            <Text fontSize="2xl" fontWeight="bold" mb={3}>
-              Instructor Requests
-            </Text>
-            {instructorRequests.length > 0 ? (
-              instructorRequests.map((request, index) => (
-                <Box
-                  key={request._id}
-                  p={4}
-                  mb={3}
-                  borderWidth="1px"
-                  borderRadius="md"
-                  bg={isDarkMode ? "#2D3748" : "white"}
-                  color={isDarkMode ? "white" : "black"}
-                >
-                  <Text fontWeight="bold">
-                    {index + 1}. {request.name}
-                  </Text>
-                  <Text>Age: {request.age}</Text>
-                  <Text>Profession: {request.profession}</Text>
-                  <Text>Field: {request.field}</Text>
-                  <Text>Experience: {request.experience}</Text>
-                  <Text>Description: {request.description}</Text>
-                  <Text>
-                    CV:{" "}
-                    <a href={request.cv} target="_blank" rel="noopener noreferrer" style={{ color: "blue" }}>
-                      View CV
-                    </a>
-                  </Text>
-                </Box>
-              ))
-            ) : (
-              <Text>No instructor requests found.</Text>
-            )}
-          </Box>
-        )}
+{instructorRequests.length > 0 ? (
+  instructorRequests.map((request, index) => (
+    <Box
+      key={request._id}
+      p={4}
+      mb={3}
+      borderWidth="1px"
+      borderRadius="md"
+      bg={isDarkMode ? "#2D3748" : "white"}
+      color={isDarkMode ? "white" : "black"}
+    >
+      <Text fontWeight="bold">
+        {index + 1}. {request.name}
+      </Text>
+      <Text>Age: {request.age}</Text>
+      <Text>Profession: {request.profession}</Text>
+      <Text>Field: {request.field}</Text>
+      <Text>Experience: {request.experience}</Text>
+      <Text>Description: {request.description}</Text>
+      <Text>
+        CV:{" "}
+        <a href={request.cv} target="_blank" rel="noopener noreferrer" style={{ color: "blue" }}>
+          View CV
+        </a>
+      </Text>
+      <Flex gap={3} mt={3}>
+        <Button
+          colorScheme="green"
+          onClick={() => handleApproveRequest(request.userId)}
+        >
+          Approve
+        </Button>
+        <Button
+          colorScheme="red"
+          onClick={() => handleRejectRequest(request._id)}
+        >
+          Reject
+        </Button>
+      </Flex>
+    </Box>
+  ))
+) : (
+  <Text>No instructor requests found.</Text>
+)}
+
       </Grid>
     </Box>
   );

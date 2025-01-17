@@ -64,30 +64,35 @@ const Dropdown = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-    // Kiểm tra nếu chưa nhập CV (URL)
+    // Lấy user từ localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userId = user?.userId;
+  
+    console.log("Debug: Retrieved User:", user);
+    console.log("Debug: Retrieved User ID:", userId);
+  
+    if (!userId) {
+      alert("User ID is missing. Please log in again.");
+      return;
+    }
+  
     if (!formData.cv) {
       alert("Please provide a CV link.");
       return;
     }
   
-    // Dữ liệu cần gửi lên
     const data = {
-      name: formData.name,
-      age: formData.age,
-      profession: formData.profession,
-      field: formData.field,
-      experience: formData.experience,
-      description: formData.description,
-      cv: formData.cv,  // Lưu đường dẫn file CV (URL)
+      ...formData,
+      userId, // Gửi kèm userId
     };
   
     try {
-      const response = await axios.post("http://localhost:5001/instructors/register", formData, {
+      const response = await axios.post("http://localhost:5001/instructors/register", data, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-    
+  
       if (response.status === 201) {
         alert("Instructor request submitted successfully!");
       } else {
@@ -96,13 +101,13 @@ const Dropdown = () => {
     } catch (error) {
       console.error("Error submitting request:", error);
       if (error.response) {
-        console.error("Response data:", error.response.data);
         alert(`Error: ${error.response.data.message || "Unknown error"}`);
       } else {
         alert("Error submitting request.");
       }
-    }    
+    }
   };
+  
   
 
   const handleLogoutClick = () => {
