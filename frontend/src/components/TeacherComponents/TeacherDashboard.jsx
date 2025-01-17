@@ -134,22 +134,9 @@ const TeacherDashboard = () => {
 
   return (
     <Box>
-      {/* Đẩy TeacherNavTop xuống và làm nổi bật */}
-      <Box
-        position="fixed"
-        top="0"
-        w="100%"
-        zIndex="20"
-        bg="white"
-        px={10}
-        boxShadow="lg"
-      >
-        <TeacherNavTop />
-      </Box>
-
-      <Box p={5} mt="80px">
-        {" "}
-        {/* Thêm mt để đẩy phần bên dưới tránh bị che khuất */}
+      {/* <TeacherNavTop /> */}
+      <Box mt="80px"></Box>
+      <Box p={5}>
         {/* Danh sách các khóa học */}
         <Grid
           templateColumns={{
@@ -173,6 +160,7 @@ const TeacherDashboard = () => {
             </Box>
           ))}
         </Grid>
+
         {/* Biểu đồ */}
         <Grid
           templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }}
