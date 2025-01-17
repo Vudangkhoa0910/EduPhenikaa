@@ -5,12 +5,12 @@ import {
   FormLabel,
   Grid,
   Input,
-  Text,
   Textarea,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+
 import TeacherNavTop from "./TeacherNavTop";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../../Redux/TeacherReducer/action";
 import { useNavigate } from "react-router-dom";
 
@@ -34,7 +34,6 @@ const AddTeacherCourse = () => {
       return { ...prev, [name]: value };
     });
   };
-
   const handleSubmit = () => {
     dispatch(addProduct(detail));
 
@@ -43,16 +42,22 @@ const AddTeacherCourse = () => {
   };
 
   return (
-    <Box>
-      {/* TeacherNavTop moved to the top */}
-      <Box position="fixed" top="0" w="100%" zIndex="9999" bg="white" px={10}>
-        <TeacherNavTop />
-      </Box>
+    <Grid className="Nav" h={"99vh"} w="100%" placeItems="center">
+      {" "}
+      {}
+      <Box mt="90px" width="90vw" maxWidth="container.lg">
+        {/* <TeacherNavTop /> */}
 
-      {/* Main content below the nav */}
-      <Box mt="80px" p={10}>
-        {/* Added margin-top to create space below the fixed nav */}
-        <Box border={"2px solid gray"} borderRadius={10} p={10} h="90%">
+        <Box
+          border={"2px solid gray"}
+          borderRadius={10}
+          p={10}
+          h="auto"
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="stretch"
+        >
           <FormControl>
             <FormLabel>Title</FormLabel>
             <Input
@@ -88,7 +93,7 @@ const AddTeacherCourse = () => {
               type="number"
               placeholder="Enter Course price"
               name="price"
-              value={Number(detail.price)}
+              value={detail.price}
               onChange={handleChange}
             />
           </FormControl>
@@ -113,7 +118,7 @@ const AddTeacherCourse = () => {
           </Button>
         </Box>
       </Box>
-    </Box>
+    </Grid>
   );
 };
 
