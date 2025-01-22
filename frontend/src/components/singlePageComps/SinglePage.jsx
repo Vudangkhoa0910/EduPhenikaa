@@ -126,7 +126,7 @@ export default function SinglePage() {
           <SingleList />
         </div>
 
-        <Box
+        {/* <Box
           mt="7rem"
           bg="white"
           w="90%"
@@ -168,9 +168,9 @@ export default function SinglePage() {
               {res?.course?.videos?.length || 0}
             </Heading>
           </Flex>
-        </Box>
+        </Box> */}
 
-        {res?.course?.videos?.length ? (
+        {/* {res?.course?.videos?.length ? (
           <Box mt="40px">
             {res?.course?.videos?.map((video, index) => {
               const embedUrl = video?.link;
@@ -248,7 +248,7 @@ export default function SinglePage() {
               the video.
             </Text>
           </Box>
-        )}
+        )} */}
         <Footer />
       </div>
     </div>
