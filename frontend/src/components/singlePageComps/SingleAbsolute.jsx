@@ -206,16 +206,19 @@ const SingleAbsolute = ({ props }) => {
     setSuccessDialogVisible(true);
     setTimeout(() => {
       setSuccessDialogVisible(false); // Ẩn dialog sau 10 giây
-    }, 10000);
+    }, 1000);
   };
 
   // Hàm điều hướng khi nhấn nút
   const handleButtonClick = () => {
     if (canNavigate) {
+      const firstVideoLink =
+        res?.course?.videos?.length > 0 ? res?.course?.videos[0]?.link : null;
       // Nếu thanh toán thành công và có thể điều hướng, điều hướng đến trang video
       navigate(
         `/video-detail/?courseId=${res?.course?._id}&url=${encodeURIComponent(
-          "https://www.youtube.com/embed/0qhZJsVX7rg"
+          // "https://www.youtube.com/embed/0qhZJsVX7rg"
+          firstVideoLink
         )}`
       );
     } else {
@@ -383,6 +386,7 @@ const SingleAbsolute = ({ props }) => {
           flexDirection="column"
           justifyContent="center"
           alignItems="center"
+          zIndex="1000"
         >
           <Text fontSize="lg" fontWeight="bold" color="green.800">
             Payment Successful
