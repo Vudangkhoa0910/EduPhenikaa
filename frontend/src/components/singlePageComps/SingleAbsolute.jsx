@@ -228,12 +228,16 @@ const SingleAbsolute = ({ props }) => {
   };
 
   return (
-    <div className="xl:border xl:border-gray-300 text-white xl:text-black xl:max-w-[280px] xl:shadow-lg shadow-neutral-800 xl:bg-white rounded-lg overflow-hidden">
+    <div className="xl:border xl:border-gray-300 text-white xl:text-black xl:max-w-[800px] xl:shadow-lg shadow-neutral-800 xl:bg-white rounded-lg overflow-hidden">
       <div>
-        <Image src={img} className="w-full" alt="Course Thumbnail" />
+        <Image
+          src={img}
+          className="w-full h-[300px] object-cover"
+          alt="Course Thumbnail"
+        />
       </div>
 
-      <div className="flex justify-around font-semibold text-sm h-[48px] items-center border-b border-gray-300">
+      <div className="flex justify-around font-semibold text-base h-[48px] items-center border-b border-gray-300">
         <div
           onClick={() => setPage("left")}
           className={`cursor-pointer text-center w-full py-2 ${
@@ -252,8 +256,8 @@ const SingleAbsolute = ({ props }) => {
         </div>
       </div>
 
-      <div className="px-6 py-4">
-        <h3 className="font-serif font-bold text-lg mb-2 max-w-[250px]">
+      <div className="px-16 py-4">
+        <h3 className="font-serif font-bold text-2xl mb-2 max-w-[700px]">
           {page === "left"
             ? "Subscribe to SRM's top courses"
             : "Teams Plan for Businesses"}
@@ -269,7 +273,7 @@ const SingleAbsolute = ({ props }) => {
 
         <button
           className="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 font-semibold rounded-md mb-3"
-          onClick={handleButtonClick} // Điều chỉnh sự kiện onClick
+          onClick={handleButtonClick}
         >
           {page === "left" ? "Start subscription" : "Get Team Plan"}
         </button>
