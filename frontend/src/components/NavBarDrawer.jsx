@@ -56,7 +56,7 @@ export function NavBarDrawer({ isOpen, onClose }) {
     };
     axios
       .post(
-        "https://elearning-platform-using-mern-j5py.vercel.app/users/logout",
+        "http://localhost:5001/users/logout",
         {},
         { headers }
       )

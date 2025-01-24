@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Container,
   Flex,
   Heading,
   Image,
@@ -12,12 +11,12 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 
 const UserSlider = () => {
   const images = [
-    "https://images.pexels.com/photos/5212653/pexels-photo-5212653.jpeg?cs=srgb&dl=pexels-max-fischer-5212653.jpg&fm=jpg",
-    "https://www.mit.edu/files/images/201807/15656704711_00457bd2c9_b_1.jpg",
-    "https://inup.iitkgp.ac.in/images/iit_kgp.jpg",
-    "https://www.vedantu.com/seo/content-images/33e42c38-8332-4d51-9dcf-65a4f262b5da.png",
-    "https://media.wired.com/photos/6365b7166776a0176c76e4de/master/w_2560%2Cc_limit/All-the-Free-Resources-You-Can-Find-at-Your-Library-Gear-GettyImages-1331816640.jpg",
-    "https://images.seattleschild.com/wp-content/uploads/2021/09/Classy-Treehouse-w-logo-e1632341660272.png",
+    "https://phenikaa-uni.edu.vn:3600/pu/vi/image-topic-60162ab3ed4c2a36389c5a9d//khua2.jpg",
+    "https://afamilycdn.com/150157425591193600/2022/9/7/photo-1-1662522743900551288398-1662526506081-16625265061841688172215.jpg",
+    "https://saudaihoc.phenikaa-uni.edu.vn/wp-content/uploads/2023/10/111.jpg",
+    "https://uwebristol.edu.vn/wp-content/uploads/Logo-UWE-Phenikaa_edited.jpg",
+    "https://phenikaa-uni.edu.vn:3600/eee/vi/posts/phenikaa-lighting.png",
+    "https://phenikaa-uni.edu.vn:3600/pu/vi/posts/21761045618568323211858904406023340136083277n.jpeg",
   ];
 
   const textOnImage = [
@@ -41,95 +40,103 @@ const UserSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    );
+    setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
   };
 
   const handlePrevious = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === images.length - 1 ? 0 : prevIndex + 1
-      );
+      setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
     }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <Box w="100%" position="relative" overflow="hidden">
+    <Box w="100vw" position="relative" overflow="hidden">
       {/* Image Section */}
-      <Image
-        src={images[currentIndex]}
-        alt={`Slide ${currentIndex}`}
-        w="100%"
-        h="600px"
-        objectFit="cover"
-      />
+      <Box
+        display="flex"
+        transition="transform 0.8s ease-in-out"
+        transform={`translateX(-${currentIndex * 100}vw)`}
+        w={`${images.length * 100}vw`}
+      >
+        {images.map((image, index) => (
+          <Image
+            key={index}
+            src={image}
+            alt={`Slide ${index}`}
+            w="100vw"
+            h="80vh"  // Adjust height here to 50% of the screen height
+            objectFit="cover"
+          />
+        ))}
+      </Box>
+
       {/* Text Overlay */}
       <Box
         position="absolute"
-        bottom="0"
-        left="0"
-        w="100%"
-        p={8}
-        bg="rgba(0, 0, 0, 0.6)"
-        color="white"
+        bottom="10%"
+        left="50%"
+        transform="translateX(-50%)"
+        w="90%"
+        maxW="800px"
         textAlign="center"
+        bg="rgba(0, 0, 0, 0.5)"  // Added background with transparency
+        p={4}
+        borderRadius="md"
       >
         <Heading
           size="2xl"
           mb={4}
-          color="orange.400"
+          bgGradient="linear(to-r, orange.400, yellow.400)"
+          bgClip="text"
           textShadow="2px 2px 8px rgba(0, 0, 0, 0.8)"
+          color="orange"  // Text color set to white for visibility
         >
           {textOnImage[currentIndex]}
         </Heading>
         <Text
-          fontSize="l"
-          color="white"
-          bg="rgba(255, 165, 0, 0.9)"
-          p={3}
-          borderRadius="md"
-          boxShadow="0 0 20px rgba(255, 165, 0, 0.5), 0 0 40px rgba(0, 0, 139, 0.7)"
+          fontSize="lg"
+          color="white"  // Make the description text color white
           fontWeight="medium"
-          lineHeight="1"
+          lineHeight="1.8"
         >
           {indexDescription[currentIndex]}
         </Text>
       </Box>
+
       {/* Navigation Buttons */}
       <Button
         position="absolute"
         top="50%"
-        left="30px"
+        left="10px"
         transform="translateY(-50%)"
-        bg="rgba(0, 0, 0, 0.5)"
+        bg="transparent"
         color="white"
         borderRadius="full"
-        _hover={{ bg: "orange.500" }}
-        _active={{ bg: "orange.600" }}
+        _hover={{ color: "orange.500" }}
+        _active={{ color: "orange.600" }}
         onClick={handlePrevious}
+        zIndex={2}
       >
         <ArrowLeftIcon boxSize={8} />
       </Button>
       <Button
         position="absolute"
         top="50%"
-        right="30px"
+        right="10px"
         transform="translateY(-50%)"
-        bg="rgba(0, 0, 0, 0.5)"
+        bg="transparent"
         color="white"
         borderRadius="full"
-        _hover={{ bg: "orange.500" }}
-        _active={{ bg: "orange.600" }}
+        _hover={{ color: "orange.500" }}
+        _active={{ color: "orange.600" }}
         onClick={handleNext}
+        zIndex={2}
       >
         <ArrowRightIcon boxSize={8} />
       </Button>

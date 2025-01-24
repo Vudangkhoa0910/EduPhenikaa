@@ -30,8 +30,6 @@ const LandingPageCarousel = ({ keyword }) => {
     appendDots: (dots) => (
       <div
         style={{
-          backgroundColor: "rgba(255, 255, 255, 0.5)", 
-          borderRadius: "10px",
           padding: "10px",
           display: "flex",
           justifyContent: "center",
@@ -47,13 +45,12 @@ const LandingPageCarousel = ({ keyword }) => {
     customPaging: (i) => (
       <div
         style={{
-          width: "12px", 
-          height: "12px",
+          width: "10px", // Giảm kích thước nút dots
+          height: "10px",
           borderRadius: "50%",
-          backgroundColor: "#3182CE", 
-          border: "2px solid #fff", 
+          border: "2px solid #3182CE", // Viền của nút dots, màu #3182CE
           margin: "0 5px",
-          transition: "background-color 0.3s ease, transform 0.3s ease",
+          transition: "transform 0.3s ease",
         }}
       />
     ),
@@ -62,6 +59,7 @@ const LandingPageCarousel = ({ keyword }) => {
     pauseOnHover: true,
     initialSlide: 0,
   };
+  
   
 
   useEffect(() => {
