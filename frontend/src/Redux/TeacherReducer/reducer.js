@@ -30,13 +30,14 @@ import {
       case PRODUCT_FAILURE:
         return { ...state, isLoading: false, isError: true };
       case GET_PRODUCT_SUCCESS:
+        console.log("Updated courses:", payload); 
         return { ...state, isLoading: false, data: payload };
       case GET_User_SUCCESS:
         return { ...state, isLoading: false, users: payload };
       case GET_Video_SUCCESS:
         return { ...state, isLoading: false, videos: payload };
       case ADD_PRODUCT_SUCCESS:
-        return { ...state, isLoading: false, data: [...state.data, payload] };
+        return { ...state, isLoading: false, data: [...state.data, action.payload] };
       case ADD_User_SUCCESS:
         return { ...state, isLoading: false, data: [...state.users, payload] };
       case ADD_Video_SUCCESS:

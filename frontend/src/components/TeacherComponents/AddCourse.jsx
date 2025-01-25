@@ -8,9 +8,8 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-
 import TeacherNavTop from "./TeacherNavTop";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addProduct } from "../../Redux/TeacherReducer/action";
 import { useNavigate } from "react-router-dom";
 
@@ -18,12 +17,14 @@ const AddTeacherCourse = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Initial object structure
   let obj = {
     title: "",
     description: "",
     category: "",
     price: "",
     img: "",
+    teacherName: "", // Teacher's name
   };
 
   const [detail, setDetail] = useState(obj);
@@ -34,20 +35,37 @@ const AddTeacherCourse = () => {
       return { ...prev, [name]: value };
     });
   };
-  const handleSubmit = () => {
-    dispatch(addProduct(detail));
 
+  const handleSubmit = () => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    
+    if (!userData || !userData.userId) {
+      console.error("Error: userData is missing or invalid in localStorage.", userData);
+      alert("Unable to retrieve user ID. Please log in again.");
+      return;
+    }
+  
+    const userId = userData.userId;
+  
+    // Check if teacherName is entered
+    if (!detail.teacherName) {
+      alert("Please enter the Teacher's name");
+      return;
+    }
+  
+    // Create the course data object with userId
+    const courseData = { ...detail, userId };
+  
+    // Dispatch action to add product (course)
+    dispatch(addProduct(courseData));
+  
     alert("Course Added Successfully");
     navigate("/Teacher/courses");
   };
 
   return (
     <Grid className="Nav" h={"99vh"} w="100%" placeItems="center">
-      {" "}
-      {}
       <Box mt="90px" width="90vw" maxWidth="container.lg">
-        {/* <TeacherNavTop /> */}
-
         <Box
           border={"2px solid gray"}
           borderRadius={10}
@@ -103,7 +121,17 @@ const AddTeacherCourse = () => {
               type="text"
               placeholder="Enter Course thumbnail Link"
               name="img"
-              value={detail?.img}
+              value={detail.img}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl mt={4}>
+            <FormLabel>Teacher Name</FormLabel>
+            <Input
+              type="text"
+              placeholder="Enter Teacher's Name"
+              name="teacherName"
+              value={detail.teacherName}
               onChange={handleChange}
             />
           </FormControl>
