@@ -216,20 +216,24 @@ export const changeRole = (data, userId) => (dispatch) => {
 };
 
 // Lấy thông tin khóa học theo User ID
-export const getCourse = (data, userId) => (dispatch) => {
+export const getCourse = (page, limit, search, order, userId) => (dispatch) => {
   dispatch({ type: PRODUCT_REQUEST });
-  fetch(`${BASE_URL}/courses/a/${userId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((res) => res.json())
+  const url = `${BASE_URL}/courses?page=${page}&limit=${limit}&q=${search}&sortBy=price&sortOrder=${order}&teacherId=${userId}`;
+  console.log("URL Request to Backend:", url); // Thêm console.log để in URL
+  axios
+    .get(
+      url,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
     .then((res) => {
-      dispatch({ type: ADD_PRODUCT_SUCCESS, payload: res.data });
+      console.log("getCourse", res);
+      dispatch({ type: GET_PRODUCT_SUCCESS, payload: res.data.course });
     })
-    .catch((e) => console.log(e));
+    .catch((e) => dispatch({ type: PRODUCT_FAILURE }));
 };
 
 // Thêm khóa học mới
