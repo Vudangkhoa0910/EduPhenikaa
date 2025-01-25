@@ -67,23 +67,70 @@ const SingleAbsolute = ({ props }) => {
     setPaymentMethod(method);
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
+    if (!paymentMethod) {
+      console.error("No payment method selected");
+      return; // Ngừng nếu chưa chọn phương thức thanh toán
+    }
+  
     onClose();
     setIsPaymentSuccess(true);
-
+  
     // Sau khi thanh toán thành công, cho phép điều hướng
     setCanNavigate(true);
-
+  
     // Đánh dấu khóa học đã được mua
     setIsCourseBought(true);
-
-    // Hiển thị dialog thông báo thành công trong 10 giây
-    setSuccessDialogVisible(true);
-    setTimeout(() => {
-      setSuccessDialogVisible(false); // Ẩn dialog sau 10 giây
-    }, 1000);
+  
+    // Lấy userId từ localStorage
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const userId = userData?.userId;
+    
+    if (!userId) {
+      console.error("User ID not found in localStorage");
+      return; // Ngừng nếu không có userId
+    }
+  
+    // Lấy courseId từ response
+    const courseId = res?.course?._id;
+    if (!courseId) {
+      console.error("Course ID is missing");
+      return; // Ngừng nếu không có courseId
+    }
+  
+    const price = displayPrice; // Lấy giá của khóa học
+  
+    try {
+      const response = await fetch("http://localhost:5001/enrollments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, courseId, price, paymentMethod }),
+      });
+  
+      // Kiểm tra phản hồi
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Enrollment failed:", errorData);
+        return;
+      }
+  
+      const data = await response.json();
+      console.log("Enrollment successful:", data); // Log dữ liệu trả về từ server
+  
+      // Xử lý thông báo thành công
+      setSuccessDialogVisible(true);
+      setTimeout(() => {
+        setSuccessDialogVisible(false); // Ẩn dialog sau 10 giây
+      }, 1000);
+  
+    } catch (error) {
+      console.error("Error during payment and enrollment:", error);
+    }
   };
-
+  
+  
   // Hàm điều hướng khi nhấn nút
   const handleButtonClick = () => {
     if (canNavigate) {
