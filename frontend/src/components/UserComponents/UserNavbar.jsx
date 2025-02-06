@@ -213,7 +213,7 @@ const UserNavBar = () => {
                 href="/Teachme"
                 color={linkColor}
               >
-                {user.role !== "teacher" && user.role !== "admin" && "Teach On SRM"}
+                {user.role !== "teacher" && user.role !== "admin" && "Role Teach"}
               </Link>
             </Box>
             <Box>

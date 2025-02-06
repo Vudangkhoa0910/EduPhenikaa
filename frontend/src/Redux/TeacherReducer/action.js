@@ -193,6 +193,9 @@ import {
   PATCH_User_SUCCESS,
   PRODUCT_FAILURE,
   PRODUCT_REQUEST,
+  GET_COURSE_ENROLLMENTS_REQUEST, // Import action types mới
+  GET_COURSE_ENROLLMENTS_SUCCESS,
+  GET_COURSE_ENROLLMENTS_FAILURE,
 } from "./actionType";
 
 const BASE_URL = "http://localhost:5001"; // Cập nhật URL backend localhost
@@ -297,19 +300,16 @@ export const addVideo = (data, courseId) => (dispatch) => {
 // Lấy danh sách khóa học
 export const getProduct = (page, limit, search, order) => async (dispatch) => {
   dispatch({ type: PRODUCT_REQUEST });
-  
+
   const userData = JSON.parse(localStorage.getItem("user"));
   if (!userData || !userData.userId) {
     console.error("Error: userData is missing or invalid in localStorage.");
     alert("Unable to retrieve user ID. Please log in again.");
     return;
   }
-  
   const userId = userData.userId;
-  console.log("Current userId from localStorage:", userId);
-  
+
   try {
-    // Gọi API để lấy khóa học
     const res = await axios.get(
       `${BASE_URL}/courses?page=${page}&limit=${limit}&q=${search}&sortBy=price&sortOrder=${order}`,
       {
@@ -318,34 +318,24 @@ export const getProduct = (page, limit, search, order) => async (dispatch) => {
         },
       }
     );
-    
-    // Log dữ liệu trả về từ API
-    console.log("API response data:", res.data);
+    console.log("API response data:", res.data); // Log response để xem cấu trúc
 
-    // Lọc kết quả khóa học theo teacherId == userId
     const filteredCourses = res.data.course.filter(course => {
-      console.log("Checking course:", course.title, "with teacherId:", course.teacherId);
-      
-      // Nếu teacherId là đối tượng có $oid (MongoDB ObjectId)
       if (course.teacherId?.$oid) {
         return course.teacherId.$oid === userId;
       }
-      
-      // Nếu teacherId là chuỗi
       return course.teacherId === userId;
     });
 
-    // Log các khóa học sau khi lọc
-    console.log("Filtered courses for userId", userId, ":", filteredCourses);
-
-    // Nếu còn khóa học khác (phân trang), tiếp tục lấy
-    if (res.data.course.length === limit && filteredCourses.length < res.data.course.length) {
-      console.log("There are more courses, fetching next page...");
-      dispatch(getProduct(page + 1, limit, search, order));
-    }
-
-    // Cập nhật dữ liệu khóa học vào Redux store
-    dispatch({ type: GET_PRODUCT_SUCCESS, payload: filteredCourses });
+    dispatch({
+      type: GET_PRODUCT_SUCCESS,
+      payload: {
+        courses: filteredCourses, // Payload chính là object chứa courses và thông tin phân trang
+        totalPages: res.data.totalPages, // Lấy totalPages từ response
+        totalCourses: res.data.totalCourses, // Lấy totalCourses từ response (nếu có)
+        currentPage: res.data.currentPage, // Lấy currentPage từ response (nếu có)
+      },
+    });
   } catch (e) {
     dispatch({ type: PRODUCT_FAILURE });
     console.error("Error fetching courses:", e);
@@ -470,4 +460,25 @@ export default function convertDateFormat(dateString) {
   }
 
   return formattedDate;
-}
+};
+
+
+export const getCourseEnrollments = () => async (dispatch) => {
+  dispatch({ type: GET_COURSE_ENROLLMENTS_REQUEST });
+  try {
+    const response = await axios.get(`${BASE_URL}/enrollments`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    dispatch({ type: GET_COURSE_ENROLLMENTS_SUCCESS, payload: response.data }); 
+    return response.data;
+  } catch (error) {
+    dispatch({ type: GET_COURSE_ENROLLMENTS_FAILURE });
+    dispatch({ type: PRODUCT_FAILURE });
+    console.error("Error fetching course enrollments:", error);
+    return [];
+  }
+};
+
+

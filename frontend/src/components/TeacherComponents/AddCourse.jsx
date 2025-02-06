@@ -6,8 +6,9 @@ import {
   Grid,
   Input,
   Textarea,
+  Text
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TeacherNavTop from "./TeacherNavTop";
 import { useDispatch } from "react-redux";
 import { addProduct } from "../../Redux/TeacherReducer/action";
@@ -17,17 +18,29 @@ const AddTeacherCourse = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Initial object structure
+  // Get user data from localStorage
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const teacherNameFromStorage = userData?.name || ""; // Default to empty string if no name
+
+  // Initial object structure - teacherName is pre-filled
   let obj = {
     title: "",
     description: "",
     category: "",
     price: "",
     img: "",
-    teacherName: "", // Teacher's name
+    teacherName: teacherNameFromStorage, // Pre-fill teacherName from localStorage
   };
 
   const [detail, setDetail] = useState(obj);
+
+  useEffect(() => {
+    // Update teacherName in state if it changes in localStorage (unlikely in this component's lifecycle, but good practice)
+    if (detail.teacherName !== teacherNameFromStorage) {
+      setDetail(prev => ({ ...prev, teacherName: teacherNameFromStorage }));
+    }
+  }, [teacherNameFromStorage]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,27 +51,23 @@ const AddTeacherCourse = () => {
 
   const handleSubmit = () => {
     const userData = JSON.parse(localStorage.getItem("user"));
-    
+
     if (!userData || !userData.userId) {
       console.error("Error: userData is missing or invalid in localStorage.", userData);
       alert("Unable to retrieve user ID. Please log in again.");
       return;
     }
-  
+
     const userId = userData.userId;
-  
-    // Check if teacherName is entered
-    if (!detail.teacherName) {
-      alert("Please enter the Teacher's name");
-      return;
-    }
-  
+
+    // No need to check if teacherName is entered manually anymore, as it's auto-filled
+
     // Create the course data object with userId
     const courseData = { ...detail, userId };
-  
+
     // Dispatch action to add product (course)
     dispatch(addProduct(courseData));
-  
+
     alert("Course Added Successfully");
     navigate("/Teacher/courses");
   };
@@ -125,16 +134,17 @@ const AddTeacherCourse = () => {
               onChange={handleChange}
             />
           </FormControl>
+          {/* Removed Teacher Name Input - Now auto-filled */}
           <FormControl mt={4}>
             <FormLabel>Teacher Name</FormLabel>
             <Input
               type="text"
-              placeholder="Enter Teacher's Name"
               name="teacherName"
               value={detail.teacherName}
-              onChange={handleChange}
+              isReadOnly // Make it read-only to prevent manual editing
             />
           </FormControl>
+
           <Button
             mt={4}
             colorScheme="blue"

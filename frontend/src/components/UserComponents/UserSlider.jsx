@@ -29,12 +29,12 @@ const UserSlider = () => {
   ];
 
   const indexDescription = [
-    "SRM encourages collaborative group studies, creating a vibrant learning environment where students can connect and learn together. It offers a versatile platform for educators to share their knowledge, helping students excel academically.",
-    "Secure your degree from renowned institutes with SRM's comprehensive education solutions. SRM provides access to globally recognized institutions, ensuring students receive quality education and gain valuable qualifications for their future careers.",
-    "SRM unlocks access to prestigious educational institutions, elevating your academic journey to new heights. With SRM, you can explore a world of educational opportunities, expanding your knowledge and skills in various fields.",
-    "Experience dynamic online classes on SRM's intuitive platform, tailored to modern learners' needs. SRM's user-friendly interface and interactive features make online learning engaging and effective, helping students succeed in today's digital age.",
-    "Access meticulously crafted study notes on SRM to enhance your understanding and retention of course materials. SRM's comprehensive study resources empower students to excel in their studies and gain a deeper understanding of their subjects.",
-    "SRM is your gateway to a successful career, offering the knowledge and skills needed for professional excellence. With SRM, you can prepare for a bright future and achieve your career goals through high-quality education and training.",
+    "EduPhenikaa encourages collaborative group studies, creating a vibrant learning environment where students can connect and learn together. It offers a versatile platform for educators to share their knowledge, helping students excel academically.",
+    "Secure your degree from renowned institutes with EduPhenikaa's comprehensive education solutions. EduPhenikaa provides access to globally recognized institutions, ensuring students receive quality education and gain valuable qualifications for their future careers.",
+    "EduPhenikaa unlocks access to prestigious educational institutions, elevating your academic journey to new heights. With EduPhenikaa, you can explore a world of educational opportunities, expanding your knowledge and skills in various fields.",
+    "Experience dynamic online classes on EduPhenikaa's intuitive platform, tailored to modern learners' needs. EduPhenikaa's user-friendly interface and interactive features make online learning engaging and effective, helping students succeed in today's digital age.",
+    "Access meticulously crafted study notes on EduPhenikaa to enhance your understanding and retention of course materials. EduPhenikaa's comprehensive study resources empower students to excel in their studies and gain a deeper understanding of their subjects.",
+    "EduPhenikaa is your gateway to a successful career, offering the knowledge and skills needed for professional excellence. With EduPhenikaa, you can prepare for a bright future and achieve your career goals through high-quality education and training.",
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);

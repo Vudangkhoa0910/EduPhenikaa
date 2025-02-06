@@ -18,32 +18,32 @@ import convertDateFormat, {
   deleteProduct,
   getProduct,
 } from "../../Redux/TeacherReducer/action";
-import Pagination from "../Adminitems/Pagination";
+import Pagination from "../Adminitems/Pagination"; // Re-import Pagination component
 
 export default function TeacherCourses() {
-  const store = useSelector((store) => store.TeacherReducer.data);
-  
-  useEffect(() => {
-    console.log("Fetched courses from Redux:", store);
-  }, [store]); // Khi store thay đổi, console log dữ liệu
+  const store = useSelector((store) => store.TeacherReducer);
+  const courses = store.data;
+  const totalPages = store.totalPages;
+  const isLoading = store.isLoading;
+  const isError = store.isError;
 
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [order, setOrder] = useState("");
-  const limit = 20;
+  const limit = 4; // Keep limit as 4 to match AddTeacher
 
   const tableSize = useBreakpointValue({ base: "sm", sm: "md", md: "lg" });
 
-  // Lấy userId từ localStorage
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData ? userData.userId : null;
 
   useEffect(() => {
     if (userId) {
-      dispatch(getProduct(page, limit, search, order, userId)); // Gọi API để lấy dữ liệu
+      console.log("TeacherCourses useEffect - Fetching page:", page, "limit:", limit, "search:", search, "order:", order, "userId:", userId);
+      dispatch(getProduct(page, limit, search, order));
     }
-  }, [page, search, order, limit, userId, dispatch]); // Thêm dispatch vào dependency array
+  }, [page, search, order, limit, userId, dispatch]);
 
   const handleDelete = (id, title) => {
     if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
@@ -53,8 +53,15 @@ export default function TeacherCourses() {
   };
 
   const handlePageButton = (val) => {
-    setPage((prev) => prev + val);
+    console.log("handlePageButton - Current page:", page, "Value:", val);
+    setPage((prev) => Math.max(1, prev + val));
   };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
+  const count = 4; // **Hardcoded count to 4, like in AddTeacher example - IMPORTANT for matching AddTeacher's pagination**
 
   return (
     <Grid className="Nav" h="100vh" w="100%" placeItems="center" px={4}>
@@ -117,8 +124,24 @@ export default function TeacherCourses() {
                 <Th>Actions</Th>
               </Tr>
             </Thead>
-            {store && store.length > 0 ? (
-              store.map((el, i) => (
+            {isLoading ? (
+              <Tbody>
+                <Tr>
+                  <Td colSpan="7" textAlign="center" color="gray.500">
+                    Loading courses...
+                  </Td>
+                </Tr>
+              </Tbody>
+            ) : isError ? (
+              <Tbody>
+                <Tr>
+                  <Td colSpan="7" textAlign="center" color="red.500">
+                    Error fetching courses. Please try again.
+                  </Td>
+                </Tr>
+              </Tbody>
+            ) : courses && courses.length > 0 ? (
+              courses.map((el, i) => (
                 <Tbody key={i}>
                   <Tr _hover={{ bg: "gray.100" }}>
                     <Td>{el.title}</Td>
@@ -155,7 +178,7 @@ export default function TeacherCourses() {
               <Tbody>
                 <Tr>
                   <Td colSpan="7" textAlign="center" color="gray.500">
-                    No data available
+                    No courses available
                   </Td>
                 </Tr>
               </Tbody>
@@ -163,27 +186,35 @@ export default function TeacherCourses() {
           </Table>
         </Box>
 
-        <Flex justifyContent="center" alignItems="center" mt={6} gap={4}>
+        <Box // Use Box to match AddTeacher's pagination container style
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          gap={4}
+          mt={4} // Changed mt to 4 to match AddTeacher
+        >
           <Button
+            size="sm" // Added size="sm" to match AddTeacher
             colorScheme="blue"
+            isDisabled={page <= 1}
             onClick={() => handlePageButton(-1)}
-            disabled={page <= 1}
           >
             Prev
           </Button>
           <Pagination
-            totalCount={10}
+            totalCount={count} // **Use hardcoded 'count' here to match AddTeacher - IMPORTANT**
             current_page={page}
-            handlePageChange={setPage}
+            handlePageChange={handlePageChange}
           />
           <Button
+            size="sm" // Added size="sm" to match AddTeacher
             colorScheme="blue"
+            isDisabled={page >= count} // **Use hardcoded 'count' here to match AddTeacher - IMPORTANT**
             onClick={() => handlePageButton(1)}
-            disabled={page >= 10}
           >
             Next
           </Button>
-        </Flex>
+        </Box>
       </Box>
     </Grid>
   );

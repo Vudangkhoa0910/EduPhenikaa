@@ -16,7 +16,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import convertDateFormat, { getCourse } from "../../Redux/TeacherReducer/action"; // Changed import to getCourse
+import convertDateFormat, { getProduct } from "../../Redux/TeacherReducer/action"; // Changed import to getProduct
 import Pagination from "../Adminitems/Pagination";
 
 const AddTeacher = () => {
@@ -28,19 +28,28 @@ const AddTeacher = () => {
   const limit = 4;
   const tableSize = useBreakpointValue({ base: "sm", sm: "md", md: "lg" });
   const courseSize = useBreakpointValue({ base: "md", sm: "lg", md: "xl" });
+  const [loadingCourses, setLoadingCourses] = useState(false); // Added loading state
 
   const handleSelect = (e) => {
     const { value } = e.target;
     setOrder(value);
   };
 
-  // Get User ID from UserReducer
-  const userId = useSelector((store) => store.UserReducer.userId) || "Không tìm thấy ID";
+  // Get User ID from localStorage - Consistent with working TeacherCourses
+  const userData = JSON.parse(localStorage.getItem("user"));
+  const userId = userData ? userData.userId : null;
 
   useEffect(() => {
-    // Dispatch getCourse with userId to filter courses
-    dispatch(getCourse(page, limit, search, order, userId)); // Changed dispatch to getCourse and added userId
-  }, [dispatch, page, search, order, userId]); // Added userId to dependency array
+    if (userId) {
+      setLoadingCourses(true); // Set loading to true before fetching
+      dispatch(getProduct(page, limit, search, order, userId)) // Changed to getProduct
+        .finally(() => setLoadingCourses(false)); // Set loading to false after fetch
+    }
+  }, [dispatch, page, search, order, userId]); // Using getProduct, userId from localStorage
+
+  useEffect(() => {
+    console.log("Fetched courses from Redux:", store); // Debugging log
+  }, [store]);
 
   const navigate = useNavigate();
 
@@ -56,15 +65,10 @@ const AddTeacher = () => {
     setPage((prev) => prev + val);
   };
 
-  const count = 4; // You might need to fetch the actual count from the API response for pagination to work correctly
+  const count = 4; //  Need to update 'count' dynamically from API response for proper pagination
 
-  // Filter courses based on userId - No longer needed as getCourse action now filters on backend
-  const filteredCourses = store?.filter(
-    (course) => {
-      const courseTeacherId = course.teacherId?.$oid || course.teacherId;
-      return courseTeacherId === userId;
-    }
-  ) || [];
+  // Removed frontend filtering as backend should handle filtering based on userId
+  // const filteredCourses = store?.filter( ... ) || [];  // No longer needed
 
   return (
     <Grid className="Nav" h="100vh" w="100%" placeItems="center" bg="gray.50" px={4}>
@@ -134,8 +138,12 @@ const AddTeacher = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {filteredCourses?.length > 0 ? ( // Use filteredCourses for rendering -  Technically not needed if backend filtering works, but kept for consistency and safety
-                  filteredCourses.map((el, i) => (
+                {loadingCourses ? ( // Display loading state
+                  <Tr>
+                    <Td colSpan="7" textAlign="center">Loading courses...</Td>
+                  </Tr>
+                ) : store?.length > 0 ? ( // Render from store directly, assuming backend filtering
+                  store.map((el, i) => (
                     <Tr key={i}>
                       <Td>{el.title || "N/A"}</Td>
                       <Td>{convertDateFormat(el.createdAt) || "N/A"}</Td>
