@@ -84,6 +84,9 @@ const Enrollments = () => {
     <div style={{ marginTop: "100px" }}>
       <Navbar />
       <h2 style={{ textAlign: "center", color: "#333" }}>User Enrollments</h2>
+      {/* <h2 style={{ textAlign: "center", color: "#333" }}>
+        {enrollments.map((enrollment) => enrollment.userId._id).join(", ")}
+      </h2> */}
 
       {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
       {error && (
@@ -117,39 +120,42 @@ const Enrollments = () => {
             </tr>
           </thead>
           <tbody>
-            {enrollments.map((enrollment) => {
-              const course = courses[enrollment.courseId] || {};
-              return (
-                <tr key={enrollment._id} style={{ background: "#f9f9f9" }}>
-                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    {course.title}
-                  </td>
-                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    ${enrollment.price}
-                  </td>
-                  <td
-                    style={{
-                      padding: "10px",
-                      border: "1px solid #ddd",
-                      textAlign: "center",
-                    }}
-                  >
-                    {paymentLogos[enrollment.paymentMethod] ? (
-                      <img
-                        src={paymentLogos[enrollment.paymentMethod]}
-                        alt={enrollment.paymentMethod}
-                        width="40px"
-                      />
-                    ) : (
-                      enrollment.paymentMethod
-                    )}
-                  </td>
-                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    {new Date(enrollment.enrollmentDate).toLocaleDateString()}
-                  </td>
-                </tr>
-              );
-            })}
+            {enrollments
+              .filter((enrollment) => enrollment.userId._id === userId)
+              // Lọc theo userId
+              .map((enrollment) => {
+                const course = courses[enrollment.courseId] || {};
+                return (
+                  <tr key={enrollment._id} style={{ background: "#f9f9f9" }}>
+                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                      {course.title}
+                    </td>
+                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                      ${enrollment.price}
+                    </td>
+                    <td
+                      style={{
+                        padding: "10px",
+                        border: "1px solid #ddd",
+                        textAlign: "center",
+                      }}
+                    >
+                      {paymentLogos[enrollment.paymentMethod] ? (
+                        <img
+                          src={paymentLogos[enrollment.paymentMethod]}
+                          alt={enrollment.paymentMethod}
+                          width="40px"
+                        />
+                      ) : (
+                        enrollment.paymentMethod
+                      )}
+                    </td>
+                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
+                      {new Date(enrollment.enrollmentDate).toLocaleDateString()}
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       ) : (
