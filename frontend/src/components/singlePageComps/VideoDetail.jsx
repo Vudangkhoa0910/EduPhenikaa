@@ -31,10 +31,73 @@ export default function VideoDetail() {
   const courseId = queryParams.get("courseId");
   const initialUrl = queryParams.get("url");
 
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const userId = storedUser?.userId;
+
   useEffect(() => {
-    if (courseId) getSinglePageData();
-    if (initialUrl) setVideoUrl(decodeURIComponent(initialUrl)); // Giải mã URL ban đầu
+    console.log("Course ID:", courseId);
+    if (courseId) {
+      getSinglePageData();
+      fetchComments();
+    }
+    if (initialUrl) setVideoUrl(decodeURIComponent(initialUrl));
   }, [courseId, initialUrl]);
+  
+
+  useEffect(() => {
+    if (courseId) fetchComments();
+    if (initialUrl) setVideoUrl(decodeURIComponent(initialUrl));
+  }, [courseId, initialUrl]);
+
+  const fetchComments = async () => {
+    try {
+      const response = await fetch(`http://localhost:5001/comments/${courseId}`);
+      const data = await response.json();
+      setComments(data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  const handleAddComment = async () => {
+    const storedUser = JSON.parse(localStorage.getItem("user")); // Lấy user từ LocalStorage
+    const userId = storedUser?.userId; // Lấy userId
+    const courseId = res?.course?._id;
+  
+    if (!userId || !newComment.trim()) {
+      console.error("User ID or comment is missing");
+      return;
+    }
+  
+    const commentData = {
+      userId,
+      courseId,
+      text: newComment,
+    };
+  
+    try {
+      const response = await fetch("http://localhost:5001/comments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(commentData),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to add comment");
+      }
+  
+      const savedComment = await response.json();
+  
+      setComments([...comments, savedComment]); // Cập nhật danh sách bình luận
+      setNewComment("");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
+  
+
 
   const getSinglePageData = () => {
     const token = userStore?.token;
@@ -56,16 +119,6 @@ export default function VideoDetail() {
     params.set("url", encodeURIComponent(videoUrl));
     navigate(`/video-detail/?${params.toString()}`);
     setVideoUrl(videoUrl);
-  };
-
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      setComments([
-        ...comments,
-        { user: userStore.name || "Anonymous", text: newComment },
-      ]);
-      setNewComment("");
-    }
   };
 
   return (
@@ -134,11 +187,8 @@ export default function VideoDetail() {
 
           {/* Phần bình luận */}
           <Box mt="6">
-            <Heading size="md" mb="4">
-              Comments
-            </Heading>
+            <Heading size="md" mb="4">Comments</Heading>
 
-            {/* Form nhập bình luận */}
             <Box display="flex" mb="4">
               <Input
                 value={newComment}
@@ -147,25 +197,18 @@ export default function VideoDetail() {
                 borderRadius="md"
                 mr="2"
               />
-              <Button colorScheme="blue" onClick={handleAddComment}>
-                Comment
-              </Button>
+              <Button colorScheme="blue" onClick={handleAddComment}>Comment</Button>
             </Box>
 
-            {/* Danh sách bình luận */}
             {comments.length ? (
               comments.map((comment, index) => (
                 <Box key={index} mb="3" p="3" bg="gray.100" borderRadius="md">
-                  <Text fontWeight="bold">{comment.user}</Text>
-                  <Text fontSize="sm" color="gray.700">
-                    {comment.text}
-                  </Text>
+                  <Text fontWeight="bold">{"Anonymous"}</Text>
+                  <Text fontSize="sm" color="gray.700">{comment.text}</Text>
                 </Box>
               ))
             ) : (
-              <Text fontSize="sm" color="gray.500">
-                No comments yet. Be the first to comment!
-              </Text>
+              <Text fontSize="sm" color="gray.500">No comments yet. Be the first to comment!</Text>
             )}
           </Box>
         </Box>
