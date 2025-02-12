@@ -680,9 +680,7 @@ const TeacherDashboard = () => {
                     <Th color={colorMode === "light" ? "black" : "white"}>
                       Role
                     </Th>
-                    <Th color={colorMode === "light" ? "black" : "white"}>
-                      Joined Date
-                    </Th>
+                    {/* <Th color={colorMode === "light" ? "black" : "white"}>Joined Date</Th> */}
                     <Th color={colorMode === "light" ? "black" : "white"}>
                       Enrollment Date
                     </Th>
@@ -690,29 +688,41 @@ const TeacherDashboard = () => {
                 </Thead>
                 <Tbody>
                   {reduxCourseEnrollments?.length > 0 ? (
-                    reduxCourseEnrollments.map((enrollment, index) => {
-                      const user = enrollment.userId;
-                      return (
-                        <Tr key={index}>
-                          <Td color={colorMode === "light" ? "black" : "white"}>
-                            {user?.name || "N/A"}
-                          </Td>
-                          <Td color={colorMode === "light" ? "black" : "white"}>
-                            {user?.email || "N/A"}
-                          </Td>
-                          <Td color={colorMode === "light" ? "black" : "white"}>
-                            {user?.role || "N/A"}
-                          </Td>
-                          <Td color={colorMode === "light" ? "black" : "white"}>
-                            {convertDateFormat(user?.createdAt) || "N/A"}
-                          </Td>
-                          <Td color={colorMode === "light" ? "black" : "white"}>
-                            {convertDateFormat(enrollment.enrollmentDate) ||
-                              "N/A"}
-                          </Td>
-                        </Tr>
-                      );
-                    })
+                    reduxCourseEnrollments
+                      .filter(
+                        (enrollment) =>
+                          (enrollment.courseId?._oid || enrollment.courseId) ===
+                          selectedCourseId
+                      )
+                      .map((enrollment, index) => {
+                        const user = enrollment.userId;
+                        return (
+                          <Tr key={index}>
+                            <Td
+                              color={colorMode === "light" ? "black" : "white"}
+                            >
+                              {user?.name || "N/A"}
+                            </Td>
+                            <Td
+                              color={colorMode === "light" ? "black" : "white"}
+                            >
+                              {user?.email || "N/A"}
+                            </Td>
+                            <Td
+                              color={colorMode === "light" ? "black" : "white"}
+                            >
+                              {user?.role || "N/A"}
+                            </Td>
+                            {/* <Td color={colorMode === "light" ? "black" : "white"}>{convertDateFormat(user?.createdAt) || "N/A"}</Td> */}
+                            <Td
+                              color={colorMode === "light" ? "black" : "white"}
+                            >
+                              {convertDateFormat(enrollment.enrollmentDate) ||
+                                "N/A"}
+                            </Td>
+                          </Tr>
+                        );
+                      })
                   ) : (
                     <Tr>
                       <Td
@@ -729,7 +739,6 @@ const TeacherDashboard = () => {
             )}
           </Box>
         )}
-
         {showContent === "students" && (
           <Box
             w="100%"
