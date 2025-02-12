@@ -331,17 +331,12 @@ const TeacherDashboard = () => {
               boxShadow="md"
               p={4}
             >
-              <Box w="100%">
-                <Grid
-                  templateColumns={{
-                    base: "repeat(2, 1fr)",
-                    md: "repeat(4, 1fr)",
-                    lg: "repeat(6, 1fr)",
-                  }}
-                  gap={6}
-                >
+              <Box overflowX="auto" whiteSpace="nowrap" maxW="1400px">
+                <Box display="flex" gap={6} flexWrap="nowrap" minWidth="fit-content">
                   {isLoadingEnrollments ? (
-                    <Text textAlign="center" color={colorMode === "light" ? "black" : "white"}>Loading courses...</Text>
+                    <Text textAlign="center" color={colorMode === "light" ? "black" : "white"}>
+                      Loading courses...
+                    </Text>
                   ) : filteredCourses?.length > 0 ? (
                     filteredCourses.map((el, i) => (
                       <Box
@@ -350,20 +345,29 @@ const TeacherDashboard = () => {
                         boxShadow="md"
                         overflow="hidden"
                         bg={colorMode === "light" ? "white" : "gray.700"}
+                        minW="180px"
+                        maxW="300px"
+                        height="350px"
+                        flexShrink={0}
                       >
                         <Image
                           display="block"
                           src={el.img || "https://via.placeholder.com/150"}
                           alt={el.title || "Course Image"}
                           w="100%"
-                          h="100px"
+                          h="120px"
                           objectFit="cover"
                         />
                         <Box p={4}>
                           <Text fontSize="xl" fontWeight="bold" mb={2} color={colorMode === "light" ? "black" : "white"}>
                             {el.title || "N/A"}
                           </Text>
-                          <Text fontSize="md" mb={2} color={colorMode === "light" ? "black" : "white"}>
+                          <Text 
+                            fontSize="md" 
+                            mb={2} 
+                            color={colorMode === "light" ? "black" : "white"}
+                            whiteSpace="normal" // Chỉ description được xuống dòng
+                          >
                             {el.description || "N/A"}
                           </Text>
                           <Text fontSize="lg" fontWeight="bold" color={colorMode === "light" ? "black" : "white"}>
@@ -373,9 +377,11 @@ const TeacherDashboard = () => {
                       </Box>
                     ))
                   ) : (
-                    <Text color={colorMode === "light" ? "black" : "white"}>No data available for this teacher</Text>
+                    <Text color={colorMode === "light" ? "black" : "white"}>
+                      No data available for this teacher
+                    </Text>
                   )}
-                </Grid>
+                </Box>
               </Box>
             </Box>
           </>
