@@ -37,7 +37,7 @@ const TeacherDashboard = () => {
   const [showContent, setShowContent] = useState("courses");
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const reduxCourseEnrollments = useSelector((store) => store.TeacherReducer.courseEnrollments); // Lấy enrollments từ Redux store **ngoài** function
+  const reduxCourseEnrollments = useSelector((store) => store.TeacherReducer.courseEnrollments);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [messages, setMessages] = useState([
     { sender: "Student 1", message: "Hi.", timestamp: new Date(Date.now() - 300000) },
@@ -95,38 +95,61 @@ const TeacherDashboard = () => {
     }
   }, [store, userId]);
 
+
+  // **EFFECT ĐỂ TÍNH DOANH THU (ĐÃ SỬA LỖI VÀ THÊM LOGS)**
   useEffect(() => {
-    let revenue = 0;
-    if (filteredCourses) {
-      revenue = filteredCourses.reduce((acc, el) => acc + (el.price || 0), 0);
+    let calculatedRevenue = 0;
+    if (filteredCourses && reduxCourseEnrollments) {
+      console.log("Tính toán doanh thu: Bắt đầu...");
+      filteredCourses.forEach(course => {
+        console.log("Tính toán doanh thu cho khóa học:", course.title, course._id);
+        const enrollmentsForCourse = reduxCourseEnrollments.filter(
+          enrollment => {
+            const enrollmentCourseId = enrollment.courseId?._oid || enrollment.courseId;
+            const currentCourseId = course._id?._oid || course._id;
+            const match = enrollmentCourseId === currentCourseId;
+            console.log(`  Enrollment Course ID: ${enrollmentCourseId}, Current Course ID: ${currentCourseId}, Match: ${match}`); // Log so sánh ID
+            return match;
+          }
+        );
+        const coursePrice = course.price || 0;
+        const courseRevenue = enrollmentsForCourse.length * coursePrice;
+        console.log(`  Số enrollments cho khóa học ${course.title}:`, enrollmentsForCourse.length); // Log số enrollments
+        console.log(`  Giá khóa học ${course.title}:`, coursePrice); // Log giá khóa học
+        console.log(`  Doanh thu khóa học ${course.title}:`, courseRevenue); // Log doanh thu từng khóa học
+        calculatedRevenue += courseRevenue;
+      });
+      console.log("Tổng doanh thu tính toán được:", calculatedRevenue); // Log tổng doanh thu
+    } else {
+      console.log("Không tính toán doanh thu: filteredCourses hoặc reduxCourseEnrollments không có dữ liệu.");
     }
-    setTotalRevenue(revenue);
-  }, [filteredCourses]);
+    setTotalRevenue(calculatedRevenue);
+  }, [filteredCourses, reduxCourseEnrollments]); // Tính toán lại khi khóa học hoặc enrollments thay đổi
+
 
   // **EFFECT ĐỂ FETCH TẤT CẢ ENROLLMENTS (chỉ dispatch action)**
   useEffect(() => {
     const fetchAllEnrollments = async () => {
-      console.log("fetchAllEnrollments: Bắt đầu dispatch getCourseEnrollments..."); // LOG Bắt đầu fetch
+      console.log("fetchAllEnrollments: Bắt đầu dispatch getCourseEnrollments...");
       try {
-        await dispatch(getCourseEnrollments()); // Gọi action lấy TẤT CẢ enrollments, chỉ dispatch, không xử lý trực tiếp ở đây
+        await dispatch(getCourseEnrollments());
       } catch (error) {
-        console.error("fetchAllEnrollments: Lỗi dispatch getCourseEnrollments:", error); // LOG Lỗi dispatch
-        setTotalStudents(0); // Đặt totalStudents về 0 nếu lỗi fetch enrollments (tùy chọn)
+        console.error("fetchAllEnrollments: Lỗi dispatch getCourseEnrollments:", error);
+        setTotalStudents(0);
       }
     };
     fetchAllEnrollments();
-  }, [dispatch]); // Effect này chỉ phụ thuộc vào dispatch
+  }, [dispatch]);
 
   // **EFFECT ĐỂ TÍNH TOÁN totalStudents KHI reduxCourseEnrollments THAY ĐỔI**
   useEffect(() => {
-    console.log("useEffect [reduxCourseEnrollments]: reduxCourseEnrollments vừa thay đổi:", reduxCourseEnrollments); // LOG: Kiểm tra effect này chạy khi nào
+    console.log("useEffect [reduxCourseEnrollments]: reduxCourseEnrollments vừa thay đổi:", reduxCourseEnrollments);
 
     if (reduxCourseEnrollments && Array.isArray(reduxCourseEnrollments)) {
-      const allEnrollments = reduxCourseEnrollments; // Enrollments đã có trong Redux store
+      const allEnrollments = reduxCourseEnrollments;
 
-      console.log("useEffect [reduxCourseEnrollments]: Dữ liệu enrollments nhận được:", allEnrollments); // LOG Dữ liệu enrollments
+      console.log("useEffect [reduxCourseEnrollments]: Dữ liệu enrollments nhận được:", allEnrollments);
 
-      // Đếm số học sinh duy nhất
       const uniqueStudentIds = new Set();
       allEnrollments.forEach(enrollment => {
         if (enrollment.userId && enrollment.userId._id) {
@@ -134,12 +157,12 @@ const TeacherDashboard = () => {
         }
       });
       setTotalStudents(uniqueStudentIds.size);
-      console.log("useEffect [reduxCourseEnrollments]: Số lượng học sinh duy nhất:", uniqueStudentIds.size); // LOG Số lượng học sinh duy nhất
+      console.log("useEffect [reduxCourseEnrollments]: Số lượng học sinh duy nhất:", uniqueStudentIds.size);
     } else {
-      console.warn("useEffect [reduxCourseEnrollments]: Không có enrollments hoặc dữ liệu không hợp lệ:", reduxCourseEnrollments); // LOG Cảnh báo dữ liệu không hợp lệ
-      setTotalStudents(0); // Đặt totalStudents về 0 nếu không có dữ liệu hợp lệ
+      console.warn("useEffect [reduxCourseEnrollments]: Không có enrollments hoặc dữ liệu không hợp lệ:", reduxCourseEnrollments);
+      setTotalStudents(0);
     }
-  }, [reduxCourseEnrollments]); // Effect này chạy khi reduxCourseEnrollments thay đổi
+  }, [reduxCourseEnrollments]);
 
 
   const handleShowContent = (contentType, courseId = null) => {

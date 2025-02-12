@@ -5,10 +5,8 @@ import Footer from "../../Pages/Footer";
 
 const paymentLogos = {
   momo: "https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-MoMo-Square-1024x1024.png",
-  vnpay:
-    "https://vinadesign.vn/uploads/images/2023/05/vnpay-logo-vinadesign-25-12-57-55.jpg",
-  paypal:
-    "https://th.bing.com/th/id/OIP.wBKSzdf1HTUgx1Ax_EecKwHaHa?rs=1&pid=ImgDetMain",
+  vnpay: "https://vinadesign.vn/uploads/images/2023/05/vnpay-logo-vinadesign-25-12-57-55.jpg",
+  paypal: "https://th.bing.com/th/id/OIP.wBKSzdf1HTUgx1Ax_EecKwHaHa?rs=1&pid=ImgDetMain",
 };
 
 const Enrollments = () => {
@@ -37,9 +35,7 @@ const Enrollments = () => {
         );
 
         if (!response.ok)
-          throw new Error(
-            `Error ${response.status}: Failed to fetch enrollments`
-          );
+          throw new Error(`Error ${response.status}: Failed to fetch enrollments`);
 
         const data = await response.json();
         setEnrollments(data);
@@ -83,84 +79,54 @@ const Enrollments = () => {
   return (
     <div style={{ marginTop: "100px" }}>
       <Navbar />
-      <h2 style={{ textAlign: "center", color: "#333" }}>User Enrollments</h2>
-      {/* <h2 style={{ textAlign: "center", color: "#333" }}>
-        {enrollments.map((enrollment) => enrollment.userId._id).join(", ")}
-      </h2> */}
+      <div style={{ maxWidth: "80%", margin: "auto", padding: "30px", background: "#fff", borderRadius: "10px", boxShadow: "0 0 10px rgba(0,0,0,0.1)", marginBottom: "50px" }}>
+        <h2 style={{ textAlign: "center", color: "#333", marginBottom: "20px" }}>User Enrollments</h2>
 
-      {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
-      {error && (
-        <p style={{ color: "red", textAlign: "center" }}>Error: {error}</p>
-      )}
+        {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
+        {error && <p style={{ color: "red", textAlign: "center" }}>Error: {error}</p>}
 
-      {enrollments.length > 0 ? (
-        <table
-          style={{ width: "80%", margin: "auto", borderCollapse: "collapse" }}
-        >
-          <thead>
-            <tr
-              style={{
-                background: "#007bff",
-                color: "#fff",
-                textAlign: "left",
-              }}
-            >
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                Course
-              </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                Price
-              </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                Payment
-              </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                Date
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {enrollments
-              .filter((enrollment) => enrollment.userId._id === userId)
-              // Lọc theo userId
-              .map((enrollment) => {
-                const course = courses[enrollment.courseId] || {};
-                return (
-                  <tr key={enrollment._id} style={{ background: "#f9f9f9" }}>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {course.title}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      ${enrollment.price}
-                    </td>
-                    <td
-                      style={{
-                        padding: "10px",
-                        border: "1px solid #ddd",
-                        textAlign: "center",
-                      }}
-                    >
-                      {paymentLogos[enrollment.paymentMethod] ? (
-                        <img
-                          src={paymentLogos[enrollment.paymentMethod]}
-                          alt={enrollment.paymentMethod}
-                          width="40px"
-                        />
-                      ) : (
-                        enrollment.paymentMethod
-                      )}
-                    </td>
-                    <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                      {new Date(enrollment.enrollmentDate).toLocaleDateString()}
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-      ) : (
-        <p style={{ textAlign: "center" }}>No enrollments found.</p>
-      )}
+        {enrollments.length > 0 ? (
+          <table style={{ width: "100%", borderCollapse: "collapse", borderRadius: "10px", overflow: "hidden" }}>
+            <thead>
+              <tr style={{ background: "#007bff", color: "#fff", textAlign: "center" }}>
+                <th style={{ padding: "12px", borderBottom: "2px solid #ddd" }}>Course</th>
+                <th style={{ padding: "12px", borderBottom: "2px solid #ddd" }}>Price</th>
+                <th style={{ padding: "12px", borderBottom: "2px solid #ddd", textAlign: "center"}}>Payment</th>
+                <th style={{ padding: "12px", borderBottom: "2px solid #ddd" }}>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {enrollments
+                .filter((enrollment) => enrollment.userId._id === userId)
+                .map((enrollment) => {
+                  const course = courses[enrollment.courseId] || {};
+                  return (
+                    <tr key={enrollment._id} style={{ background: "#f9f9f9", textAlign: "center" }}>
+                      <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>{course.title}</td>
+                      <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>${enrollment.price}</td>
+                      <td style={{ 
+                        padding: "12px", 
+                        borderBottom: "1px solid #ddd", 
+                        paddingLeft: "50px",
+                        textAlign: "right", 
+                        width: "150px" 
+                      }}>
+                        {paymentLogos[enrollment.paymentMethod] ? (
+                          <img src={paymentLogos[enrollment.paymentMethod]} alt={enrollment.paymentMethod} width="50px" />
+                        ) : (
+                          enrollment.paymentMethod
+                        )}
+                      </td>
+                      <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>{new Date(enrollment.enrollmentDate).toUTCString()}</td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        ) : (
+          <p style={{ textAlign: "center" }}>No enrollments found.</p>
+        )}
+      </div>
       <Footer />
     </div>
   );

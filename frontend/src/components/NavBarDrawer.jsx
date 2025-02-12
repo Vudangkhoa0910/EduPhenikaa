@@ -21,6 +21,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import axios from "axios";
 import { actionUserLogout } from "../Redux/UserReducer/actionType";
 import { showToast } from "./SignUp";
+import EduAIChatbox  from "../components/EduAIChatbox.js";
 
 export function NavBarDrawer({ isOpen, onClose }) {
   const userStore = useSelector((store) => store.UserReducer);
@@ -105,7 +106,7 @@ export function NavBarDrawer({ isOpen, onClose }) {
                 color="#0056d2"
                 _hover={{ cursor: "pointer" }}
               >
-                SRM
+                EduPhenika
               </Text>
             </Link>
             <Box>
@@ -341,6 +342,7 @@ export function NavBarDrawer({ isOpen, onClose }) {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
+      <EduAIChatbox />
     </Box>
   );
 }
