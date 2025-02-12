@@ -5,6 +5,9 @@ const { courseRoute } = require("./routes/courses.route");
 const { videoRoute } = require("./routes/videos.route");
 const instructorRoutes = require("./routes/instructor.route");
 const enrollRouter = require("./routes/enroll.route"); // Import đúng router
+const commentRouter = require("./routes/comments.route");
+
+
 
 const cors = require("cors");
 require("dotenv").config();
@@ -22,6 +25,7 @@ app.use("/courses", courseRoute);
 app.use("/videos", videoRoute);
 app.use("/instructors", instructorRoutes);
 app.use("/enrollments", enrollRouter);
+app.use("/comments", commentRouter);
 
 // Endpoint to regenerate token
 app.get("/regenerateToken", (req, res) => {
