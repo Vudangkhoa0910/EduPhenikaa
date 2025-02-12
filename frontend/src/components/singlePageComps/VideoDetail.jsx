@@ -60,18 +60,14 @@ export default function VideoDetail() {
   };
 
   const handleAddComment = async () => {
-    const storedUser = JSON.parse(localStorage.getItem("user")); // Lấy user từ LocalStorage
-    const userId = storedUser?.userId; // Lấy userId
-    const courseId = res?.course?._id;
-  
     if (!userId || !newComment.trim()) {
-      console.error("User ID or comment is missing");
+      console.error("User ID or comment text is missing");
       return;
     }
   
     const commentData = {
+      courseId,  // Sử dụng courseId từ URL
       userId,
-      courseId,
       text: newComment,
     };
   
@@ -84,19 +80,20 @@ export default function VideoDetail() {
         body: JSON.stringify(commentData),
       });
   
+      // Nếu không OK, đọc nội dung lỗi từ server
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error adding comment (status " + response.status + "):", errorData);
         throw new Error("Failed to add comment");
       }
   
       const savedComment = await response.json();
-  
       setComments([...comments, savedComment]); // Cập nhật danh sách bình luận
       setNewComment("");
     } catch (error) {
       console.error("Error adding comment:", error);
     }
   };
-  
 
 
   const getSinglePageData = () => {
