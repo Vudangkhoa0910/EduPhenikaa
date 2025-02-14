@@ -51,28 +51,72 @@ const TeacherDashboard = () => {
     (store) => store.TeacherReducer.courseEnrollments
   );
   const [selectedCourseId, setSelectedCourseId] = useState(null);
-  const [messages, setMessages] = useState([
-    {
-      sender: "Student 1",
-      message: "Hi.",
-      timestamp: new Date(Date.now() - 300000),
-    },
-    {
-      sender: "Student 2",
-      message: "Hi",
-      timestamp: new Date(Date.now() - 3600000),
-    },
-    {
-      sender: "Student 3",
-      message: "He",
-      timestamp: new Date(Date.now() - 86400000),
-    },
-    {
-      sender: "Student 1",
-      message: "He",
-      timestamp: new Date(Date.now() - 172800000),
-    },
-  ]);
+  // const [messages, setMessages] = useState([
+  //   {
+  //     sender: "Student 1",
+  //     message: "Hi.",
+  //     timestamp: new Date(Date.now() - 300000),
+  //   },
+  //   {
+  //     sender: "Student 2",
+  //     message: "Hi",
+  //     timestamp: new Date(Date.now() - 3600000),
+  //   },
+  //   {
+  //     sender: "Student 3",
+  //     message: "He",
+  //     timestamp: new Date(Date.now() - 86400000),
+  //   },
+  //   {
+  //     sender: "Student 1",
+  //     message: "He",
+  //     timestamp: new Date(Date.now() - 172800000),
+  //   },
+  // ]);
+  const [messages, setMessages] = useState([]);
+
+  // Thêm useEffect để fetch comments
+  useEffect(() => {
+    const fetchAllCourseComments = async () => {
+      try {
+        // Lấy tất cả comments từ các khóa học của giáo viên
+        const allComments = await Promise.all(
+          filteredCourses.map(async (course) => {
+            const courseId = course._id.$oid || course._id;
+            const response = await fetch(
+              `http://localhost:5001/comments/${courseId}`
+            );
+            if (!response.ok) throw new Error("Failed to fetch comments");
+            const comments = await response.json();
+            return comments.map((comment) => ({
+              ...comment,
+              courseName: course.title, // Thêm tên khóa học vào mỗi comment
+            }));
+          })
+        );
+
+        // Gộp tất cả comments và chuyển đổi format
+        const formattedMessages = allComments
+          .flat()
+          .map((comment) => ({
+            crouse: `Khoá học: ${comment.courseName}` || "Unknown User",
+            message: `Học viên: ${comment.userId}\n ${comment.text}`,
+            timestamp: new Date(comment.createdAt),
+            courseId: comment.courseId,
+            userId: comment.userId?._id,
+          }))
+          .sort((a, b) => b.timestamp - a.timestamp);
+
+        setMessages(formattedMessages);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    if (filteredCourses?.length > 0) {
+      fetchAllCourseComments();
+    }
+  }, [filteredCourses]);
   const [notifications, setNotifications] = useState([]);
   // const [notifications, setNotifications] = useState([
   //   {
@@ -777,7 +821,7 @@ const TeacherDashboard = () => {
               mb={4}
               color={colorMode === "light" ? "black" : "white"}
             >
-              Student Messages
+              Bình luận từ học viên
             </Heading>
             <VStack spacing={4} align="stretch">
               {messages.length > 0 ? (
@@ -792,9 +836,11 @@ const TeacherDashboard = () => {
                     <Flex justify="space-between" align="center" mb={2}>
                       <Text
                         fontWeight="bold"
-                        color={colorMode === "light" ? "blue.500" : "blue.300"}
+                        color={
+                          colorMode === "light" ? "green.500" : "green.300"
+                        }
                       >
-                        {msg.sender}
+                        {msg.crouse}
                       </Text>
                       <Text fontSize="sm" color="gray.500">
                         {formatDistanceToNow(msg.timestamp, {
@@ -804,13 +850,34 @@ const TeacherDashboard = () => {
                       </Text>
                     </Flex>
                     <Divider mb={2} />
-                    <Text color={colorMode === "light" ? "black" : "white"}>
-                      {msg.message}
+                    <Text
+                      color={colorMode === "light" ? "black" : "white"}
+                      whiteSpace="pre-line"
+                      sx={{
+                        "& span": {
+                          color:
+                            colorMode === "light" ? "blue.600" : "blue.300",
+                          fontWeight: "bold",
+                        },
+                      }}
+                    >
+                      {msg.message.split("\n").map((line, index) =>
+                        index === 0 ? (
+                          // Dòng đầu tiên (Học viên: userId)
+                          <span key={index}>{line}</span>
+                        ) : (
+                          // Dòng thứ hai (nội dung text)
+                          <React.Fragment key={index}>
+                            <br />
+                            {line}
+                          </React.Fragment>
+                        )
+                      )}
                     </Text>
                   </Box>
                 ))
               ) : (
-                <Text color="gray.500">No messages yet.</Text>
+                <Text color="gray.500">Chưa có bình luận nào.</Text>
               )}
             </VStack>
           </Box>
