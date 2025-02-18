@@ -6,8 +6,7 @@ const { videoRoute } = require("./routes/videos.route");
 const instructorRoutes = require("./routes/instructor.route");
 const enrollRouter = require("./routes/enroll.route"); // Import đúng router
 const commentRouter = require("./routes/comments.route");
-
-
+const viewRoute = require("./routes/view.route");
 
 const cors = require("cors");
 require("dotenv").config();
@@ -26,6 +25,7 @@ app.use("/videos", videoRoute);
 app.use("/instructors", instructorRoutes);
 app.use("/enrollments", enrollRouter);
 app.use("/comments", commentRouter);
+app.use("/views", viewRoute);
 
 // Endpoint to regenerate token
 app.get("/regenerateToken", (req, res) => {
@@ -40,7 +40,9 @@ app.get("/regenerateToken", (req, res) => {
     );
     res.status(201).json({ msg: "Token created", token });
   } catch (error) {
-    res.status(400).json({ msg: "Not a valid Refresh Token", error: error.message });
+    res
+      .status(400)
+      .json({ msg: "Not a valid Refresh Token", error: error.message });
   }
 });
 
