@@ -203,18 +203,98 @@ const SingleAbsolute = ({ props }) => {
     }
   };
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     if (checkIsEnrolled()) {
+      try {
+        // Lấy dữ liệu lượt xem từ server backend
+        const response = await fetch(
+          `http://localhost:5001/views?courseId=${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch view data from server");
+        }
+
+        const viewData = await response.json();
+
+        // Lấy videoId từ video YouTube trong dạng link embedded
+        const videoId = getVideoIdFromLink(res?.course?.videos[0]?.link);
+        if (!videoId) {
+          throw new Error("Invalid YouTube video link");
+        }
+
+        // Lấy thông tin lượt xem từ YouTube API
+        const youtubeApiKey = ""; // Thay bằng API key của bạn
+        const youtubeResponse = await fetch(
+          `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${youtubeApiKey}`
+        );
+        if (!youtubeResponse.ok) {
+          throw new Error("Failed to fetch data from YouTube API");
+        }
+
+        const youtubeData = await youtubeResponse.json();
+        const youtubeViews = youtubeData.items[0].statistics.viewCount;
+
+        if (viewData.length > 0) {
+          // Đã có dữ liệu lượt xem, tăng view lên 1
+          await fetch(`http://localhost:5001/views/${viewData[0]._id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ views: viewData[0].views + 1 }),
+          });
+        } else {
+          // Chưa có dữ liệu, thêm mới
+          await fetch("http://localhost:5001/views", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              views: youtubeViews, // Lấy số lượt xem từ YouTube
+              teacherId: res?.course?.teacherId,
+              courseId: id,
+              courseName: res?.course?.title,
+              coursePrice: res?.course?.price,
+            }),
+          });
+        }
+      } catch (error) {
+        console.error("Error updating views:", error);
+      }
+
+      // Dẫn tới trang chi tiết video
       const firstVideoLink =
         res?.course?.videos?.length > 0 ? res?.course?.videos[0]?.link : null;
-      navigate(
-        `/video-detail/?courseId=${res?.course?._id}&url=${encodeURIComponent(
-          firstVideoLink
-        )}`
-      );
+      if (firstVideoLink) {
+        navigate(
+          `/video-detail/?courseId=${res?.course?._id}&url=${encodeURIComponent(
+            firstVideoLink
+          )}`
+        );
+      } else {
+        console.error("No video link available");
+      }
     } else {
-      onOpen();
+      onOpen(); // Nếu chưa đăng ký, mở popup
     }
+  };
+
+  // Hàm để lấy videoId từ link YouTube embed
+  const getVideoIdFromLink = (link) => {
+    const regex = /(?:https?:\/\/(?:www\.)?youtube\.com\/embed\/)([\w-]+)/;
+    const match = link.match(regex);
+    return match ? match[1] : null;
   };
 
   if (loading) return <div>Loading...</div>;
