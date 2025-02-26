@@ -32,7 +32,7 @@ const SingleAbsolute = ({ props }) => {
   const [res, setRes] = useState({});
   const { id } = useParams();
   const userStore = useSelector((store) => store.UserReducer);
-  const vdo_url = `http://localhost:5001/videos/courseVideos/${id}`;
+  const vdo_url = `http://localhost:5001/videos/courseVideos/${id}`; 
 
   const userId = userStore?.userId;
   const token = userStore?.token;
