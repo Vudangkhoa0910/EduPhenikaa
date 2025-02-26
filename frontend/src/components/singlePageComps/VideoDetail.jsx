@@ -10,6 +10,11 @@ import {
   Divider,
   Button,
   Input,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
 } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import Navbar from "../UserComponents/UserNavbar";
@@ -25,6 +30,9 @@ export default function VideoDetail() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [discussions, setDiscussions] = useState([]);
+  const [newDiscussion, setNewDiscussion] = useState("");
+
 
   // Lấy courseId và url từ query string
   const queryParams = new URLSearchParams(location.search);
@@ -39,15 +47,11 @@ export default function VideoDetail() {
     if (courseId) {
       getSinglePageData();
       fetchComments();
+      fetchDiscussions();
     }
     if (initialUrl) setVideoUrl(decodeURIComponent(initialUrl));
   }, [courseId, initialUrl]);
-  
 
-  useEffect(() => {
-    if (courseId) fetchComments();
-    if (initialUrl) setVideoUrl(decodeURIComponent(initialUrl));
-  }, [courseId, initialUrl]);
 
   const fetchComments = async () => {
     try {
@@ -59,18 +63,28 @@ export default function VideoDetail() {
     }
   };
 
+  const fetchDiscussions = async () => {
+    try {
+      const response = await fetch(`http://localhost:5001/discussions/${courseId}`);
+      const data = await response.json();
+      setDiscussions(data);
+    } catch (error) {
+      console.error("Error fetching discussions:", error);
+    }
+  };
+
   const handleAddComment = async () => {
     if (!userId || !newComment.trim()) {
       console.error("User ID or comment text is missing");
       return;
     }
-  
+
     const commentData = {
       courseId,  // Sử dụng courseId từ URL
       userId,
       text: newComment,
     };
-  
+
     try {
       const response = await fetch("http://localhost:5001/comments", {
         method: "POST",
@@ -79,19 +93,54 @@ export default function VideoDetail() {
         },
         body: JSON.stringify(commentData),
       });
-  
+
       // Nếu không OK, đọc nội dung lỗi từ server
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Error adding comment (status " + response.status + "):", errorData);
         throw new Error("Failed to add comment");
       }
-  
+
       const savedComment = await response.json();
       setComments([...comments, savedComment]); // Cập nhật danh sách bình luận
       setNewComment("");
     } catch (error) {
       console.error("Error adding comment:", error);
+    }
+  };
+
+  const handleAddDiscussion = async () => {
+    if (!userId || !newDiscussion.trim()) {
+      console.error("User ID or discussion text is missing");
+      return;
+    }
+
+    const discussionData = {
+      courseId,
+      userId,
+      text: newDiscussion,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5001/discussions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(discussionData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error adding discussion (status " + response.status + "):", errorData);
+        throw new Error("Failed to add discussion");
+      }
+
+      const savedDiscussion = await response.json();
+      setDiscussions([...discussions, savedDiscussion]);
+      setNewDiscussion("");
+    } catch (error) {
+      console.error("Error adding discussion:", error);
     }
   };
 
@@ -182,31 +231,73 @@ export default function VideoDetail() {
             <Divider mt="4" />
           </Box>
 
-          {/* Phần bình luận */}
+          {/* Tabs for Comments and Discussions */}
           <Box mt="6">
-            <Heading size="md" mb="4">Comments</Heading>
+            <Tabs variant="enclosed">
+              <TabList>
+                <Tab>Comments</Tab>
+                <Tab>Discussions</Tab>
+              </TabList>
+              <TabPanels>
+                {/* Comments Tab */}
+                <TabPanel>
+                  <Box display="flex" mb="4">
+                    <Input
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Add a comment..."
+                      borderRadius="md"
+                      mr="2"
+                    />
+                    <Button colorScheme="blue" onClick={handleAddComment}>
+                      Comment
+                    </Button>
+                  </Box>
 
-            <Box display="flex" mb="4">
-              <Input
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Add a comment..."
-                borderRadius="md"
-                mr="2"
-              />
-              <Button colorScheme="blue" onClick={handleAddComment}>Comment</Button>
-            </Box>
+                  {comments.length ? (
+                    comments.map((comment, index) => (
+                      <Box key={index} mb="3" p="3" bg="gray.100" borderRadius="md">
+                        <Text fontWeight="bold">{"Anonymous"}</Text>
+                        <Text fontSize="sm" color="gray.700">{comment.text}</Text>
+                      </Box>
+                    ))
+                  ) : (
+                    <Text fontSize="sm" color="gray.500">
+                      No comments yet. Be the first to comment!
+                    </Text>
+                  )}
+                </TabPanel>
 
-            {comments.length ? (
-              comments.map((comment, index) => (
-                <Box key={index} mb="3" p="3" bg="gray.100" borderRadius="md">
-                  <Text fontWeight="bold">{"Anonymous"}</Text>
-                  <Text fontSize="sm" color="gray.700">{comment.text}</Text>
-                </Box>
-              ))
-            ) : (
-              <Text fontSize="sm" color="gray.500">No comments yet. Be the first to comment!</Text>
-            )}
+                {/* Discussions Tab */}
+                <TabPanel>
+                  <Box display="flex" mb="4">
+                    <Input
+                      value={newDiscussion}
+                      onChange={(e) => setNewDiscussion(e.target.value)}
+                      placeholder="Start a discussion..."
+                      borderRadius="md"
+                      mr="2"
+                    />
+                    <Button colorScheme="green" onClick={handleAddDiscussion}>
+                      Discuss
+                    </Button>
+                  </Box>
+
+                  {discussions.length ? (
+                    discussions.map((discussion, index) => (
+                      <Box key={index} mb="3" p="3" bg="gray.100" borderRadius="md">
+                        <Text fontWeight="bold">{"Anonymous"}</Text>
+                        <Text fontSize="sm" color="gray.700">{discussion.text}</Text>
+                      </Box>
+                    ))
+                  ) : (
+                    <Text fontSize="sm" color="gray.500">
+                      No discussions yet. Be the first to start one!
+                    </Text>
+                  )}
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </Box>
         </Box>
 
