@@ -100,7 +100,7 @@ const TeacherDashboard = () => {
           .flat()
           .map((comment) => ({
             crouse: `Khoá học: ${comment.courseName}` || "Unknown User",
-            message: `Học viên: ${comment.userId}\n ${comment.text}`,
+            message: `Học viên: ${comment.name}\n ${comment.text}`,
             timestamp: new Date(comment.createdAt),
             courseId: comment.courseId,
             userId: comment.userId?._id,
@@ -339,7 +339,7 @@ const TeacherDashboard = () => {
         // Tạo notifications với timestamp
         const newNotifications = data.map((enrollment) => ({
           id: enrollment._id,
-          message: `Người dùng ${enrollment.userId._id} đã đăng ký khóa học ${
+          message: `Người dùng Vũ Đăng Khoa đã đăng ký khóa học ${
             coursesMap[enrollment.courseId]?.title || "Unknown"
           }`,
           timestamp: new Date(enrollment.createdAt || Date.now()),
@@ -546,22 +546,12 @@ const TeacherDashboard = () => {
               boxShadow="md"
               p={4}
             >
-              <Box w="100%">
-                <Grid
-                  templateColumns={{
-                    base: "repeat(2, 1fr)",
-                    md: "repeat(4, 1fr)",
-                    lg: "repeat(6, 1fr)",
-                  }}
-                  gap={6}
-                >
+            <Box overflowX="auto" whiteSpace="nowrap" maxW="1400px">
+               <Box display="flex" gap={6} flexWrap="nowrap" minWidth="fit-content">
                   {isLoadingEnrollments ? (
-                    <Text
-                      textAlign="center"
-                      color={colorMode === "light" ? "black" : "white"}
-                    >
-                      Loading courses...
-                    </Text>
+                  <Text textAlign="center" color={colorMode === "light" ? "black" : "white"}>
+                     Loading courses...
+                   </Text>
                   ) : filteredCourses?.length > 0 ? (
                     filteredCourses.map((el, i) => (
                       <Box
@@ -570,13 +560,17 @@ const TeacherDashboard = () => {
                         boxShadow="md"
                         overflow="hidden"
                         bg={colorMode === "light" ? "white" : "gray.700"}
+                        minW="180px"
+                        maxW="300px"
+                        height="350px"
+                        flexShrink={0}
                       >
                         <Image
                           display="block"
                           src={el.img || "https://via.placeholder.com/150"}
                           alt={el.title || "Course Image"}
                           w="100%"
-                          h="100px"
+                          h="120px"
                           objectFit="cover"
                         />
                         <Box p={4}>
@@ -588,10 +582,11 @@ const TeacherDashboard = () => {
                           >
                             {el.title || "N/A"}
                           </Text>
-                          <Text
-                            fontSize="md"
-                            mb={2}
+                          <Text 
+                            fontSize="md" 
+                            mb={2} 
                             color={colorMode === "light" ? "black" : "white"}
+                            whiteSpace="normal" // Chỉ description được xuống dòng
                           >
                             {el.description || "N/A"}
                           </Text>
@@ -610,9 +605,9 @@ const TeacherDashboard = () => {
                       No data available for this teacher
                     </Text>
                   )}
-                </Grid>
               </Box>
             </Box>
+          </Box>
           </>
         )}
 
