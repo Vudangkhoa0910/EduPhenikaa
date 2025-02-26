@@ -1,20 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
   Box,
   Input,
   Text,
   VStack,
   Spinner,
   HStack,
+  IconButton,
 } from "@chakra-ui/react";
-import { FaRobot } from "react-icons/fa";
+import { FaRobot, FaTimes } from "react-icons/fa";
 import axios from "axios";
 
 const EduAIChatbox = () => {
@@ -24,8 +19,7 @@ const EduAIChatbox = () => {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const openChat = () => setIsOpen(true);
-  const closeChat = () => setIsOpen(false);
+  const toggleChat = () => setIsOpen(!isOpen);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -45,7 +39,7 @@ const EduAIChatbox = () => {
 
     try {
       const response = await axios.post(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyAbgYjk5GNETwqbD83ow8EQQO3D4vV_cws",
         {
           contents: [{ parts: [{ text: input }] }],
         },
@@ -56,7 +50,7 @@ const EduAIChatbox = () => {
         response.data?.candidates?.[0]?.content?.parts?.map((p) => p.text).join(" ") ||
         "No response";
 
-      const formattedText = aiText.replace(/\*/g, "").replace(/<br\s*\/?>/g, "\n");
+      const formattedText = aiText.replace(/\*/g, "").replace(/<br\s*\/>/g, "\n");
 
       const aiMessage = { sender: "EduAI", text: formattedText };
       setMessages((prev) => [...prev, aiMessage]);
@@ -70,84 +64,88 @@ const EduAIChatbox = () => {
 
   return (
     <>
-     <Button
-      onClick={openChat}
-      leftIcon={<FaRobot />}
-      colorScheme="orange"
-      position="fixed"
-      bottom="20px"
-      right="20px"
-      zIndex="popover"  // Đảm bảo hiển thị trên các phần tử khác
-      boxShadow="2xl"
-      borderRadius="full"
-      p={4}
-      fontSize="lg"
-      fontWeight="bold"
-      _hover={{ bg: "orange.500", transform: "scale(1.05)" }}
-      _active={{ bg: "orange.600", transform: "scale(0.95)" }}
-    >
-      EduAI
-    </Button>
+      <Button
+        onClick={toggleChat}
+        leftIcon={<FaRobot />}
+        colorScheme="orange"
+        position="fixed"
+        bottom="20px"
+        right="20px"
+        zIndex="popover"
+        boxShadow="2xl"
+        borderRadius="full"
+        p={4}
+        fontSize="lg"
+        fontWeight="bold"
+        _hover={{ bg: "orange.500", transform: "scale(1.05)" }}
+        _active={{ bg: "orange.600", transform: "scale(0.95)" }}
+      >
+        EduAI
+      </Button>
 
-    <Modal isOpen={isOpen} onClose={closeChat} size="xl">
-        <ModalOverlay backdropFilter="blur(5px)" />
-        <ModalContent borderRadius="lg" maxW="900px">
-          <ModalHeader textAlign="center">EduAI Chatbox</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack spacing={4} align="stretch">
-              <Box
-                height="500px"
-                overflowY="auto"
-                borderWidth="1px"
-                p={4}
-                borderRadius="md"
-                bg="gray.50"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                position="relative"
-              >
-                {messages.length === 0 ? (
-                  <Text fontSize="lg" fontWeight="bold" color="orange.500">
-                    Please Ask EduAI
+      {isOpen && (
+        <Box
+          position="fixed"
+          bottom="80px"
+          right="20px"
+          width="320px"
+          maxHeight="400px"
+          borderWidth="1px"
+          borderRadius="md"
+          boxShadow="lg"
+          bg="white"
+          p={4}
+          zIndex="popover"
+        >
+          <HStack justify="space-between">
+            <Text fontWeight="bold">EduAI Chatbox</Text>
+            <IconButton
+              icon={<FaTimes />}
+              size="sm"
+              onClick={toggleChat}
+              aria-label="Close chat"
+            />
+          </HStack>
+
+          <Box height="250px" overflowY="auto" p={2}>
+            {messages.length === 0 ? (
+              <Text fontSize="sm" color="gray.500" textAlign="center">
+                Please Ask EduAI
+              </Text>
+            ) : (
+              <VStack align="stretch" spacing={1}>
+                {messages.map((msg, index) => (
+                  <Text
+                    key={index}
+                    fontWeight={msg.sender === "EduAI" ? "bold" : "normal"}
+                    color={msg.sender === "EduAI" ? "blue.600" : "black"}
+                    whiteSpace="pre-line"
+                  >
+                    {msg.sender}: {msg.text}
                   </Text>
-                ) : (
-                  <VStack align="stretch" width="100%">
-                    {messages.map((msg, index) => (
-                      <Text
-                        key={index}
-                        fontWeight={msg.sender === "EduAI" ? "bold" : "normal"}
-                        color={msg.sender === "EduAI" ? "blue.600" : "black"}
-                        whiteSpace="pre-line"
-                      >
-                        {msg.sender}: {msg.text}
-                      </Text>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </VStack>
-                )}
-              </Box>
+                ))}
+                <div ref={messagesEndRef} />
+              </VStack>
+            )}
+          </Box>
 
-              {loading && (
-                <HStack>
-                  <Spinner size="sm" />
-                  <Text fontSize="sm">EduAI is thinking...</Text>
-                </HStack>
-              )}
+          {loading && (
+            <HStack>
+              <Spinner size="sm" />
+              <Text fontSize="sm">EduAI is thinking...</Text>
+            </HStack>
+          )}
 
-              <Input
-                placeholder={loading ? "Waiting for response..." : "Type a message..."}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                isDisabled={loading}
-                borderRadius="md"
-              />
-            </VStack>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+          <Input
+            placeholder={loading ? "Waiting for response..." : "Type a message..."}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            isDisabled={loading}
+            borderRadius="md"
+          />
+        </Box>
+      )}
     </>
   );
 };
