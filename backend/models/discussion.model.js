@@ -33,7 +33,7 @@ const discussionSchema = new mongoose.Schema({
       required: true,
       ref: 'user'
     },
-    username: String,
+    name: String,  // Changed from 'username' to 'name' for consistency
     text: {
       type: String,
       required: true

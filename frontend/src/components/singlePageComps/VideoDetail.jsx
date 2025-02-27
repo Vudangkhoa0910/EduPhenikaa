@@ -15,6 +15,7 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  Flex,
 } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import Navbar from "../UserComponents/UserNavbar";
@@ -32,6 +33,8 @@ export default function VideoDetail() {
   const [newComment, setNewComment] = useState("");
   const [discussions, setDiscussions] = useState([]);
   const [newDiscussion, setNewDiscussion] = useState("");
+  const [newDiscussionTitle, setNewDiscussionTitle] = useState("");
+  const [commentInputs, setCommentInputs] = useState({});
 
 
   // Lấy courseId và url từ query string
@@ -67,60 +70,76 @@ export default function VideoDetail() {
     try {
       const response = await fetch(`http://localhost:5001/discussions/${courseId}`);
       const data = await response.json();
+      console.log("Fetched discussions data:", data);
+      
+      // Check the structure of the first discussion's comments if available
+      if (data && data.length > 0 && data[0].comments && data[0].comments.length > 0) {
+        console.log("Example comment structure:", data[0].comments[0]);
+      }
+      
       setDiscussions(data);
     } catch (error) {
       console.error("Error fetching discussions:", error);
     }
   };
 
-  const handleAddComment = async () => {
-    if (!userId || !newComment.trim()) {
-      console.error("User ID or comment text is missing");
+  const handleAddComment = async (discussionId) => {
+    const commentText = commentInputs[discussionId];
+  
+    if (!userId || !commentText || !commentText.trim()) {
       return;
     }
-
-    const commentData = {
-      courseId,  // Sử dụng courseId từ URL
-      userId,
-      text: newComment,
-    };
-
+  
     try {
-      const response = await fetch("http://localhost:5001/comments", {
+      const response = await fetch(`http://localhost:5001/discussions/${discussionId}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(commentData),
+        body: JSON.stringify({
+          userId,
+          text: commentText
+        }),
       });
-
-      // Nếu không OK, đọc nội dung lỗi từ server
+  
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error adding comment (status " + response.status + "):", errorData);
+        console.error("Error adding comment:", errorData);
         throw new Error("Failed to add comment");
       }
-
-      const savedComment = await response.json();
-      setComments([...comments, savedComment]); // Cập nhật danh sách bình luận
-      setNewComment("");
+  
+      const updatedDiscussion = await response.json();
+      console.log("Response from adding comment:", updatedDiscussion);
+      console.log("Last comment added:", updatedDiscussion.comments[updatedDiscussion.comments.length - 1]);
+      
+      // Update the discussions state with the new comment
+      setDiscussions(discussions.map(disc => 
+        disc._id === discussionId ? updatedDiscussion : disc
+      ));
+      
+      // Clear the input for this discussion
+      setCommentInputs(prev => ({
+        ...prev,
+        [discussionId]: ""
+      }));
     } catch (error) {
-      console.error("Error adding comment:", error);
+      console.error("Error adding comment to discussion:", error);
     }
   };
 
   const handleAddDiscussion = async () => {
-    if (!userId || !newDiscussion.trim()) {
-      console.error("User ID or discussion text is missing");
+    if (!userId || !newDiscussion.trim() || !newDiscussionTitle.trim()) {
+      alert("Please provide both a title and message for your discussion");
       return;
     }
-
+  
     const discussionData = {
       courseId,
       userId,
+      title: newDiscussionTitle,
       text: newDiscussion,
     };
-
+  
     try {
       const response = await fetch("http://localhost:5001/discussions", {
         method: "POST",
@@ -129,21 +148,61 @@ export default function VideoDetail() {
         },
         body: JSON.stringify(discussionData),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error adding discussion (status " + response.status + "):", errorData);
+        console.error("Error adding discussion:", errorData);
         throw new Error("Failed to add discussion");
       }
-
+  
       const savedDiscussion = await response.json();
       setDiscussions([...discussions, savedDiscussion]);
       setNewDiscussion("");
+      setNewDiscussionTitle("");
     } catch (error) {
       console.error("Error adding discussion:", error);
     }
   };
 
+  const handleCommentInputChange = (discussionId, value) => {
+    setCommentInputs((prev) => ({
+      ...prev,
+      [discussionId]: value,
+    }));
+  };
+
+  // Function for adding regular comments (Tab 1)
+  const handleAddRegularComment = async () => {
+    if (!userId || !newComment || !newComment.trim()) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`http://localhost:5001/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          courseId,
+          text: newComment
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error adding comment:", errorData);
+        return;
+      }
+  
+      const savedComment = await response.json();
+      setComments([...comments, savedComment]);
+      setNewComment(""); // Clear the input
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
 
   const getSinglePageData = () => {
     const token = userStore?.token;
@@ -249,7 +308,7 @@ export default function VideoDetail() {
                       borderRadius="md"
                       mr="2"
                     />
-                    <Button colorScheme="blue" onClick={handleAddComment}>
+                    <Button colorScheme="blue" onClick={handleAddRegularComment}>
                       Comment
                     </Button>
                   </Box>
@@ -270,29 +329,75 @@ export default function VideoDetail() {
 
                 {/* Discussions Tab */}
                 <TabPanel>
-                  <Box display="flex" mb="4">
+                  {/* Create a new discussion */}
+                  <Box mb="6" p="4" borderWidth="1px" borderRadius="lg" bg="white">
+                    <Heading size="sm" mb="2">Start a New Discussion</Heading>
+                    <Input
+                      value={newDiscussionTitle}
+                      onChange={(e) => setNewDiscussionTitle(e.target.value)}
+                      placeholder="Discussion title"
+                      borderRadius="md"
+                      mb="2"
+                    />
                     <Input
                       value={newDiscussion}
                       onChange={(e) => setNewDiscussion(e.target.value)}
-                      placeholder="Start a discussion..."
+                      placeholder="Your message..."
                       borderRadius="md"
-                      mr="2"
+                      mb="2"
                     />
                     <Button colorScheme="green" onClick={handleAddDiscussion}>
-                      Discuss
+                      Post Discussion
                     </Button>
                   </Box>
 
+                  {/* Discussion threads */}
                   {discussions.length ? (
-                    discussions.map((discussion, index) => (
-                      <Box key={index} mb="3" p="3" bg="gray.100" borderRadius="md">
-                        <Text fontWeight="bold">{"Anonymous"}</Text>
-                        <Text fontSize="sm" color="gray.700">{discussion.text}</Text>
+                    discussions.map((discussion) => (
+                      <Box key={discussion._id} mb="6" p="4" borderWidth="1px" borderRadius="lg" bg="white">
+                        <Heading size="md" mb="2">{discussion.title}</Heading>
+                        
+                        {/* Comments within this discussion */}
+                        <Box mb="4">
+                          {discussion.comments.map((comment, idx) => {
+                            console.log(`Comment ${idx} in discussion ${discussion._id}:`, comment);
+                            return (
+                              <Box key={idx} p="3" mb="2" bg="gray.50" borderRadius="md">
+                                <Flex justify="space-between" align="center" mb="1">
+                                  <Text fontWeight="bold">
+                                    {comment.name || 
+                                     (comment.userId && comment.userId.name ? comment.userId.name : "Anonymous")}
+                                  </Text>
+                                  <Text fontSize="xs" color="gray.500">
+                                    {new Date(comment.createdAt).toLocaleString()}
+                                  </Text>
+                                </Flex>
+                                <Text>{comment.text}</Text>
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                        
+                        {/* Add comment to this discussion */}
+                        <Flex>
+                          <Input
+                            value={commentInputs[discussion._id] || ""}
+                            onChange={(e) => handleCommentInputChange(discussion._id, e.target.value)}
+                            placeholder="Reply to this discussion..."
+                            mr="2"
+                          />
+                          <Button 
+                            colorScheme="blue" 
+                            onClick={() => handleAddComment(discussion._id)}
+                          >
+                            Reply
+                          </Button>
+                        </Flex>
                       </Box>
                     ))
                   ) : (
                     <Text fontSize="sm" color="gray.500">
-                      No discussions yet. Be the first to start one!
+                      No discussions yet. Start a new discussion!
                     </Text>
                   )}
                 </TabPanel>

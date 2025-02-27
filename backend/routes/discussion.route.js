@@ -10,7 +10,11 @@ router.get("/:courseId", async (req, res) => {
     const discussions = await Discussion.find({ courseId })
       .populate({
         path: "participants",
-        select: "name"
+        select: "name email"  // Include any user fields you want
+      })
+      .populate({
+        path: "comments.userId",
+        select: "name email"  // Include any user fields you want
       });
 
     res.status(200).json(discussions);
@@ -72,7 +76,7 @@ router.post("/:discussionId/comments", async (req, res) => {
     // Add the new comment
     discussion.comments.push({
       userId,
-      name: user.name,
+      name: user.name,  // Using "name" here instead of "username"
       text
     });
 
