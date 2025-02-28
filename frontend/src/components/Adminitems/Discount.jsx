@@ -16,10 +16,20 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
-  Spinner
+  Spinner,
+  Card,
+  CardBody,
+  CardFooter,
+  Stack,
+  Divider,
+  ButtonGroup,
+  useColorModeValue,
+  Tooltip,
+  Container // Import Container
 } from "@chakra-ui/react";
 import AdminNavTop from "../AdminNavTop";
 import axios from 'axios';
+import { FaTags, FaSync, FaTrash, FaCheckCircle } from 'react-icons/fa';
 
 const BASE_URL = "http://localhost:5001";
 
@@ -29,6 +39,8 @@ const Discount = () => {
   const [loading, setLoading] = useState(false);
   const [discountValues, setDiscountValues] = useState({});
   const toast = useToast();
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const textColor = useColorModeValue('gray.700', 'gray.300');
 
   // Fetch all courses when component mounts
   useEffect(() => {
@@ -52,7 +64,7 @@ const Discount = () => {
       const response = await axios.get(`${BASE_URL}/courses`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       if (response.data && response.data.course) {
         setCourses(response.data.course);
       }
@@ -81,32 +93,33 @@ const Discount = () => {
   // Update discount for a course
   const handleDiscountUpdate = async (courseId) => {
     const discountValue = discountValues[courseId];
-    
+
     try {
       const token = JSON.parse(localStorage.getItem("user"))?.token;
       const response = await axios.patch(
-        `${BASE_URL}/courses/update/${courseId}`, 
+        `${BASE_URL}/courses/update/${courseId}`,
         { discount: discountValue },
         {
-          headers: { 
+          headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           }
         }
       );
-      
+
       if (response.status === 200) {
         // Update local state
-        setCourses(courses.map(course => 
-          course._id === courseId ? {...course, discount: discountValue} : course
+        setCourses(courses.map(course =>
+          course._id === courseId ? { ...course, discount: discountValue } : course
         ));
-        
+
         toast({
           title: "Success",
           description: "Discount updated successfully",
           status: "success",
           duration: 3000,
           isClosable: true,
+          icon: <FaCheckCircle color="green" />,
         });
       }
     } catch (error) {
@@ -126,28 +139,28 @@ const Discount = () => {
     try {
       const token = JSON.parse(localStorage.getItem("user"))?.token;
       const response = await axios.patch(
-        `${BASE_URL}/courses/update/${courseId}`, 
+        `${BASE_URL}/courses/update/${courseId}`,
         { discount: 0 },
         {
-          headers: { 
+          headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           }
         }
       );
-      
+
       if (response.status === 200) {
         // Update local state immediately
-        setCourses(prevCourses => prevCourses.map(course => 
-          course._id === courseId ? {...course, discount: 0} : course
+        setCourses(prevCourses => prevCourses.map(course =>
+          course._id === courseId ? { ...course, discount: 0 } : course
         ));
-        
+
         // Reset the discount value in the state
         setDiscountValues(prev => ({
           ...prev,
           [courseId]: 0
         }));
-        
+
         // Show success message
         toast({
           title: "Success",
@@ -155,8 +168,9 @@ const Discount = () => {
           status: "success",
           duration: 3000,
           isClosable: true,
+          icon: <FaCheckCircle color="green" />,
         });
-        
+
         // Reload all courses data
         fetchCourses().catch(err => {
           console.error("Error reloading courses after discount removal:", err);
@@ -175,145 +189,170 @@ const Discount = () => {
   };
 
   // Filter courses based on search term
-  const filteredCourses = courses.filter(course => 
+  const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <Box h={"auto"} minH="99vh" w="94%" mt='80px' pb={8}>
-      <AdminNavTop />
-      
-      {/* Search and header */}
-      <Flex justify="space-between" align="center" mb={6} flexWrap="wrap" gap={2}>
-        <Heading size="lg">Course Discounts</Heading>
-        <Flex gap={4}>
-          <Input 
-            placeholder="Search courses..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            width="300px"
-          />
-          <Button
-            colorScheme="blue"
-            onClick={fetchCourses}
-            isLoading={loading}
-          >
-            Refresh Data
-          </Button>
-        </Flex>
-      </Flex>
-      
-      {loading ? (
-        <Flex justify="center" align="center" height="200px">
-          <Spinner size="xl" color="blue.500" />
-        </Flex>
-      ) : (
-        <>
-          {/* Courses grid */}
-          <Grid 
-            templateColumns={{
-              xl: "repeat(3,1fr)",
-              lg: "repeat(2,1fr)",
-              base: "repeat(1,1fr)",
-            }}
-            gap={10}
-          >
-            {filteredCourses.map((course) => (
-              <Box 
-                key={course._id}
-                boxShadow="md"
-                borderRadius="lg"
-                overflow="hidden"
-                bg="white"
-                transition="transform 0.3s"
-                _hover={{ transform: "translateY(-5px)" }}
+    <Container maxW="container.xl" p={0}> {/* Use Container for full width */}
+      <Box h={"auto"} minH="100vh" mt='120px' pb={8} px={6}> {/* Adjust padding inside Box */}
+        {/* Search and header */}
+        <Flex justify="space-between" align="center" mb={6} flexWrap="wrap" gap={2}>
+          <Heading size="xl" color={textColor} display="flex" alignItems="center" gap={2}>
+               Course Discounts
+          </Heading>
+          <Flex gap={4} align="center">
+            <Input
+              placeholder="Search courses..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              bg="white"
+              color={textColor}
+              _placeholder={{ color: 'gray.500' }}
+              border="1px solid"
+              borderColor="gray.200"
+              _focus={{ borderColor: 'blue.500' }}
+              borderRadius="md"
+              paddingInlineStart={4}
+              paddingInlineEnd={4}
+              height="40px"
+              width="300px"
+            />
+            <Tooltip label="Refresh Data" placement="bottom">
+              <Button
+                colorScheme="blue"
+                onClick={fetchCourses}
+                isLoading={loading}
+                leftIcon={<FaSync />}
+                height="40px"
+                width="150px"
               >
-                <Image
-                  src={course.img || "https://via.placeholder.com/300x150?text=No+Image"}
-                  alt={course.title}
-                  height="150px"
-                  width="100%"
-                  objectFit="cover"
-                />
-                
-                <Box p={5}>
-                  <Text fontWeight="bold" fontSize="xl" mb={2}>
-                    {course.title}
-                  </Text>
-                  
-                  <Text fontSize="md" mb={4} noOfLines={2}>
-                    {course.description}
-                  </Text>
-                  
-                  <Flex justify="space-between" align="center" mb={4}>
-                    <Text fontSize="lg" fontWeight="semibold">
-                      Original Price: ${course.price}
-                    </Text>
-                    
-                    {course.discount > 0 && (
-                      <Text fontSize="lg" fontWeight="bold" color="green.500">
-                        Discounted: ${(course.price - (course.price * course.discount / 100)).toFixed(2)}
+                Refresh
+              </Button>
+            </Tooltip>
+          </Flex>
+        </Flex>
+
+        {loading ? (
+          <Flex justify="center" align="center" height="200px">
+            <Spinner size="xl" color="blue.500" />
+          </Flex>
+        ) : (
+          <>
+            {/* Courses grid */}
+            <Grid
+              templateColumns={{
+                xl: "repeat(3,1fr)",
+                lg: "repeat(2,1fr)",
+                base: "repeat(1,1fr)",
+              }}
+              gap={8}
+            >
+              {filteredCourses.map((course) => (
+                <Card
+                  key={course._id}
+                  maxW="md"
+                  bg={cardBg}
+                  boxShadow="md"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  transition="transform 0.3s"
+                  _hover={{ transform: "translateY(-5px)" }}
+                  color={textColor}
+                  border="1px solid"
+                  borderColor="gray.200"
+                >
+                  <Image
+                    src={course.img || "https://via.placeholder.com/300x150?text=No+Image"}
+                    alt={course.title}
+                    height="200px" // Increased height
+                    width="100%"
+                    objectFit="cover"
+                  />
+
+                  <CardBody>
+                    <Stack spacing="3">
+                      <Heading size="md" fontWeight="semibold">
+                        {course.title}
+                      </Heading>
+                      <Text fontSize="sm" noOfLines={2}>
+                        {course.description}
                       </Text>
-                    )}
-                  </Flex>
-                  
-                  <FormControl>
-                    <FormLabel>Discount Percentage (%)</FormLabel>
-                    <Flex>
-                      <NumberInput 
-                        min={0} 
-                        max={100} 
-                        value={discountValues[course._id] || 0}
-                        onChange={(valueString) => {
-                          const value = parseInt(valueString);
-                          handleDiscountChange(course._id, value);
-                        }}
-                        flex="1"
-                        mr={2}
-                      >
-                        <NumberInputField />
-                        <NumberInputStepper>
-                          <NumberIncrementStepper />
-                          <NumberDecrementStepper />
-                        </NumberInputStepper>
-                      </NumberInput>
-                      
-                      <Button 
-                        colorScheme="blue" 
-                        onClick={() => handleDiscountUpdate(course._id)}
-                        isDisabled={discountValues[course._id] === course.discount}
-                      >
-                        Apply
-                      </Button>
-                    </Flex>
-                  </FormControl>
-                  
-                  {course.discount > 0 && (
-                    <Button 
-                      colorScheme="red" 
-                      variant="outline" 
-                      mt={4} 
-                      width="full"
-                      onClick={() => handleRemoveDiscount(course._id)}
-                    >
-                      Remove Discount
-                    </Button>
-                  )}
-                </Box>
+                      <Divider />
+                      <Flex justify="space-between" align="center">
+                        <Text fontSize="sm" fontWeight="medium">
+                          Original Price: <Text as="span" fontWeight="bold">${course.price}</Text>
+                        </Text>
+
+                        {course.discount > 0 && (
+                          <Text fontSize="sm" fontWeight="bold" color="green.500">
+                            Discounted: ${(course.price - (course.price * course.discount / 100)).toFixed(2)}
+                          </Text>
+                        )}
+                      </Flex>
+                    </Stack>
+                  </CardBody>
+                  <CardFooter>
+                    <FormControl>
+                      <FormLabel fontSize="sm">Discount Percentage (%)</FormLabel>
+                      <Flex direction="column" gap={2}>
+                        <NumberInput
+                          min={0}
+                          max={100}
+                          value={discountValues[course._id] || 0}
+                          onChange={(valueString) => {
+                            const value = parseInt(valueString);
+                            handleDiscountChange(course._id, value);
+                          }}
+                          flex="1"
+                          size="sm"
+                        >
+                          <NumberInputField />
+                          <NumberInputStepper>
+                            <NumberIncrementStepper />
+                            <NumberDecrementStepper />
+                          </NumberInputStepper>
+                        </NumberInput>
+
+                        <ButtonGroup spacing="2">
+                          <Button
+                            colorScheme="blue"
+                            size="sm"
+                            onClick={() => handleDiscountUpdate(course._id)}
+                            isDisabled={discountValues[course._id] === course.discount}
+                          >
+                            Apply
+                          </Button>
+                          {course.discount > 0 && (
+                            <Button
+                              colorScheme="red"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleRemoveDiscount(course._id)}
+                              leftIcon={<FaTrash />}
+                            >
+                              Remove
+                            </Button>
+                          )}
+                        </ButtonGroup>
+                      </Flex>
+                    </FormControl>
+                  </CardFooter>
+                </Card>
+              ))}
+            </Grid>
+
+            {filteredCourses.length === 0 && (
+              <Box textAlign="center" py={10}>
+                <Text fontSize="lg" color="gray.500">
+                  No courses found. Try a different search term.
+                </Text>
               </Box>
-            ))}
-          </Grid>
-          
-          {filteredCourses.length === 0 && (
-            <Box textAlign="center" py={10}>
-              <Text fontSize="lg" color="gray.500">
-                No courses found. Try a different search term.
-              </Text>
-            </Box>
-          )}
-        </>
-      )}
-    </Box>
+            )}
+          </>
+        )}
+      </Box>
+    </Container>
   );
 };
 

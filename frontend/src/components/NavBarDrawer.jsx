@@ -218,11 +218,6 @@ export function NavBarDrawer({ isOpen, onClose }) {
                       Discount
                     </Text>
                   </Link>
-                  <Link to="/admin/giftcard">
-                    <Text fontSize="0.8rem" p="1rem 0">
-                      GiftCards
-                    </Text>
-                  </Link>
                   <Link to="/admin/statistic">
                     <Text fontSize="0.8rem" p="1rem 0">
                       Statistics
