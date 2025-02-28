@@ -38,6 +38,7 @@ const Discount = () => {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const [discountValues, setDiscountValues] = useState({});
+  const [isApplying, setIsApplying] = useState(false); // Track applying state
   const toast = useToast();
   const cardBg = useColorModeValue('white', 'gray.800');
   const textColor = useColorModeValue('gray.700', 'gray.300');
@@ -93,6 +94,17 @@ const Discount = () => {
   // Update discount for a course
   const handleDiscountUpdate = async (courseId) => {
     const discountValue = discountValues[courseId];
+    setIsApplying(true); // Set applying state to true
+
+    // Show success message
+    toast({
+      title: "Success",
+      description: "Applying discount...",
+      status: "success",
+      duration: 3000, // Set duration for 3 seconds
+      isClosable: true,
+      icon: <FaCheckCircle color="green" />,
+    });
 
     try {
       const token = JSON.parse(localStorage.getItem("user"))?.token;
@@ -112,25 +124,20 @@ const Discount = () => {
         setCourses(courses.map(course =>
           course._id === courseId ? { ...course, discount: discountValue } : course
         ));
-
-        toast({
-          title: "Success",
-          description: "Discount updated successfully",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          icon: <FaCheckCircle color="green" />,
-        });
       }
+
     } catch (error) {
       console.error("Error updating discount:", error);
       toast({
         title: "Error",
-        description: "Failed to update discount",
+        description: "Failed to apply discount",
         status: "error",
-        duration: 3000,
+        duration: 3000, // Duration for error message
         isClosable: true,
       });
+    } finally {
+        setIsApplying(false);
+      window.location.reload();
     }
   };
 
@@ -166,7 +173,7 @@ const Discount = () => {
           title: "Success",
           description: "Discount removed successfully",
           status: "success",
-          duration: 3000,
+          duration: 3000, // Set duration for 3 seconds
           isClosable: true,
           icon: <FaCheckCircle color="green" />,
         });
@@ -182,9 +189,12 @@ const Discount = () => {
         title: "Error",
         description: "Failed to remove discount",
         status: "error",
-        duration: 3000,
+        duration: 3000, //Duration for error message
         isClosable: true,
       });
+    } finally {
+        setIsApplying(false);
+      window.location.reload(); // Reload the page
     }
   };
 
@@ -319,7 +329,8 @@ const Discount = () => {
                             colorScheme="blue"
                             size="sm"
                             onClick={() => handleDiscountUpdate(course._id)}
-                            isDisabled={discountValues[course._id] === course.discount}
+                            isDisabled={discountValues[course._id] === course.discount || isApplying} // Disable during applying
+                            isLoading={isApplying} // Show loading state
                           >
                             Apply
                           </Button>
