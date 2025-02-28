@@ -21,6 +21,36 @@ import { useSelector } from "react-redux";
 import Navbar from "../UserComponents/UserNavbar";
 import Footer from "../../Pages/Footer";
 
+// Keep this helper function outside since it doesn't use component variables
+const getVideoIdFromLink = (url) => {
+  if (!url) return null;
+  
+  // Handle different YouTube URL formats
+  let videoId = null;
+  
+  // Format: https://www.youtube.com/embed/VIDEO_ID
+  if (url.includes('youtube.com/embed/')) {
+    videoId = url.split('youtube.com/embed/')[1];
+    if (videoId.includes('?')) {
+      videoId = videoId.split('?')[0];
+    }
+  }
+  // Format: https://www.youtube.com/watch?v=VIDEO_ID
+  else if (url.includes('youtube.com/watch?v=')) {
+    const urlParams = new URLSearchParams(url.split('?')[1]);
+    videoId = urlParams.get('v');
+  }
+  // Format: https://youtu.be/VIDEO_ID
+  else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1];
+    if (videoId.includes('?')) {
+      videoId = videoId.split('?')[0];
+    }
+  }
+  
+  return videoId;
+};
+
 export default function VideoDetail() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -36,7 +66,6 @@ export default function VideoDetail() {
   const [newDiscussionTitle, setNewDiscussionTitle] = useState("");
   const [commentInputs, setCommentInputs] = useState({});
 
-
   // Lấy courseId và url từ query string
   const queryParams = new URLSearchParams(location.search);
   const courseId = queryParams.get("courseId");
@@ -45,6 +74,103 @@ export default function VideoDetail() {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userId = storedUser?.userId;
 
+  // Move updateViewCount inside the component
+  const updateViewCount = async (videoId, viewCount) => {
+    try {
+      const token = userStore?.token;
+      
+      // First check if view record exists
+      const viewResponse = await fetch(
+        `http://localhost:5001/views?courseId=${courseId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const viewData = await viewResponse.json();
+      
+      if (viewData.length > 0) {
+        // Update existing view record
+        await fetch(`http://localhost:5001/views/${viewData[0]._id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ 
+            views: parseInt(viewCount) 
+          }),
+        });
+      } else {
+        // Create new view record
+        await fetch("http://localhost:5001/views", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            views: parseInt(viewCount),
+            teacherId: res?.course?.teacherId,
+            courseId,
+            courseName: res?.course?.title,
+            coursePrice: res?.course?.price,
+          }),
+        });
+      }
+    } catch (error) {
+      console.error("Error updating view count in backend:", error);
+    }
+  };
+  
+  // Move fetchYouTubeViewCount inside the component
+  const fetchYouTubeViewCount = async (videoUrl) => {
+    try {
+      // Replace with your actual YouTube API key
+      const youtubeApiKey = "YOUR_YOUTUBE_API_KEY";
+      
+      // Extract video ID
+      const videoId = getVideoIdFromLink(videoUrl);
+      if (!videoId) {
+        console.error("Could not extract video ID from URL:", videoUrl);
+        return;
+      }
+      
+      // Fetch video statistics from YouTube API
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${youtubeApiKey}`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`YouTube API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      if (data.items && data.items.length > 0) {
+        const viewCount = data.items[0].statistics.viewCount;
+        console.log("YouTube views:", viewCount);
+        
+        // Update the course with the view count
+        setRes(prev => ({
+          ...prev,
+          course: {
+            ...prev.course,
+            views: viewCount
+          }
+        }));
+        
+        // Update views in backend
+        updateViewCount(videoId, viewCount);
+      }
+    } catch (error) {
+      console.error("Error fetching YouTube view count:", error);
+    }
+  };
+
+  // Rest of your component remains the same
   useEffect(() => {
     console.log("Course ID:", courseId);
     if (courseId) {
@@ -54,7 +180,6 @@ export default function VideoDetail() {
     }
     if (initialUrl) setVideoUrl(decodeURIComponent(initialUrl));
   }, [courseId, initialUrl]);
-
 
   const fetchComments = async () => {
     try {
@@ -214,7 +339,14 @@ export default function VideoDetail() {
       },
     })
       .then((res) => res.json())
-      .then((data) => setRes(data))
+      .then((data) => {
+        setRes(data);
+        
+        // Fetch YouTube views for the first video if available
+        if (data?.course?.videos && data.course.videos.length > 0) {
+          fetchYouTubeViewCount(data.course.videos[0].link);
+        }
+      })
       .catch((err) => console.error("Error fetching video data:", err));
   };
 
