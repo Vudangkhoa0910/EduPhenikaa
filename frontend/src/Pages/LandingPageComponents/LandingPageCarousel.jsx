@@ -201,6 +201,8 @@ const LandingPageCarousel = ({ keyword }) => {
         <Slider {...settings}>
           {courses.map((el) => {
             const isRegistered = isCourseRegistered(el._id);
+            const hasDiscount = el.discount > 0;
+            
             return (
               <Box
                 key={el._id}
@@ -210,17 +212,36 @@ const LandingPageCarousel = ({ keyword }) => {
                 position="relative"
               >
                 <Card {...el} />
-                {isRegistered && (
-                  <Tag
-                    size="sm"
-                    colorScheme="green"
-                    position="absolute"
-                    top="8px"
-                    right="8px"
-                  >
-                    Đã đăng ký
-                  </Tag>
-                )}
+                
+                {/* Tags container to organize multiple tags */}
+                <Flex 
+                  position="absolute"
+                  top="8px"
+                  right="8px"
+                  direction="column"
+                  gap="4px"
+                >
+                  {/* Registration tag */}
+                  {isRegistered && (
+                    <Tag
+                      size="sm"
+                      colorScheme="green"
+                    >
+                      Đã đăng ký
+                    </Tag>
+                  )}
+                  
+                  {/* Discount tag */}
+                  {hasDiscount && (
+                    <Tag
+                      size="sm"
+                      colorScheme="red"
+                      variant="solid"
+                    >
+                      -{el.discount}% 
+                    </Tag>
+                  )}
+                </Flex>
               </Box>
             );
           })}
