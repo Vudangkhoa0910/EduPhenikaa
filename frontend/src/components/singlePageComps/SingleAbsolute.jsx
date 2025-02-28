@@ -138,8 +138,16 @@ const SingleAbsolute = ({ props }) => {
     setRandom((Math.random() * 20).toFixed());
   }, []);
 
-  const displayPrice = page === "left" ? price : (price * 1.2).toFixed(2);
-  const originalPrice = ((displayPrice * (+random + 100)) / 100).toFixed(2);
+  // Calculate discount price if course has discount
+  const hasDiscount = res?.course?.discount > 0;
+  const discountPercentage = res?.course?.discount || 0;
+  const originalPrice = page === "left" ? price : (price * 1.2).toFixed(2);
+  const discountedPrice = hasDiscount 
+    ? (originalPrice * (1 - discountPercentage/100)).toFixed(2) 
+    : originalPrice;
+
+  // The final price shown to users
+  const displayPrice = discountedPrice;
 
   const handlePaymentMethodSelect = (method) => {
     setPaymentMethod(method);
@@ -355,11 +363,22 @@ const SingleAbsolute = ({ props }) => {
           <>
             <div className="flex space-x-2 place-items-baseline mb-2">
               <p className="font-bold text-lg">${displayPrice}</p>
-              <p className="line-through text-xs text-gray-400">
-                ${originalPrice}
-              </p>
-              <p className="text-xs text-green-600">{random}% off</p>
+              {hasDiscount && (
+                <>
+                  <p className="line-through text-xs text-gray-400">
+                    ${originalPrice}
+                  </p>
+                  <p className="text-xs text-green-600">{discountPercentage}% off</p>
+                </>
+              )}
             </div>
+            
+            {hasDiscount && (
+              <div className="mb-2 px-2 py-1 bg-red-100 text-red-800 rounded inline-block text-xs font-semibold">
+                Special Offer! {discountPercentage}% discount applied
+              </div>
+            )}
+            
             <button
               onClick={onOpen}
               className="border-2 border-blue-600 text-blue-600 w-full py-2 text-sm font-bold rounded-md hover:bg-blue-50"
@@ -376,11 +395,23 @@ const SingleAbsolute = ({ props }) => {
           <ModalHeader>{res?.course?.title}</ModalHeader>
           <ModalBody>
             <Text fontSize="lg" fontWeight="bold">
-              {courseName}
+              {res?.course?.title}
             </Text>
-            <Text fontSize="xl" color="blue.600" fontWeight="bold">
-              ${displayPrice}
-            </Text>
+
+            {hasDiscount ? (
+              <>
+                <Text fontSize="xl" color="blue.600" fontWeight="bold">
+                  ${displayPrice} <span className="line-through text-sm text-gray-400">${originalPrice}</span>
+                </Text>
+                <Text fontSize="sm" color="green.500" fontWeight="bold">
+                  {discountPercentage}% discount applied
+                </Text>
+              </>
+            ) : (
+              <Text fontSize="xl" color="blue.600" fontWeight="bold">
+                ${displayPrice}
+              </Text>
+            )}
 
             <Text mt={4} fontWeight="bold">
               Choose Payment Method:
