@@ -11,7 +11,7 @@ const discussionRoutes = require("./routes/discussion.route");
 const cors = require("cors");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-
+const favoriteCourseRoutes = require('./routes/favoritecourse.route');
 const app = express();
 
 // Middleware
@@ -27,6 +27,7 @@ app.use("/enrollments", enrollRouter);
 app.use("/comments", commentRouter);
 app.use("/views", viewRoute);
 app.use("/discussions", discussionRoutes);
+app.use('/favoritecourses', favoriteCourseRoutes);
 // Endpoint to regenerate token
 app.get("/regenerateToken", (req, res) => {
   const rToken = req.headers.authorization?.split(" ")[1];
