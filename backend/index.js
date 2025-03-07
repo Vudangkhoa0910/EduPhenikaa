@@ -1,40 +1,35 @@
 const express = require("express");
-    const { connection } = require("./db");
-    const { userRouter } = require("./routes/users.routes");
-    const { courseRoute } = require("./routes/courses.route");
-    const { videoRoute } = require("./routes/videos.route");
-    const instructorRoutes = require("./routes/instructor.route");
-    const enrollRouter = require("./routes/enroll.route");
-    const commentRouter = require("./routes/comments.route");
-    const viewRoute = require("./routes/view.route");
-    const discussionRoutes = require("./routes/discussion.route");
-    const questionRoutes = require("./routes/question.route");
-    const scoreRoute = require("./routes/score.route"); // Import score routes
-    const cors = require("cors");
-    require("dotenv").config();
-    const jwt = require("jsonwebtoken");
+const { connection } = require("./db");
+const { userRouter } = require("./routes/users.routes");
+const { courseRoute } = require("./routes/courses.route");
+const { videoRoute } = require("./routes/videos.route");
+const instructorRoutes = require("./routes/instructor.route");
+const enrollRouter = require("./routes/enroll.route"); // Import đúng router
+const commentRouter = require("./routes/comments.route");
+const viewRoute = require("./routes/view.route");
+const discussionRoutes = require("./routes/discussion.route");
+const cors = require("cors");
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
 
-    const app = express();
+const app = express();
 
     // Middleware
     app.use(cors());
     app.use(express.json());
 
-    // Routes
-    app.use("/users", userRouter);
-    app.use("/courses", courseRoute);
-    app.use("/videos", videoRoute);
-    app.use("/instructors", instructorRoutes);
-    app.use("/enrollments", enrollRouter);
-    app.use("/comments", commentRouter);
-    app.use("/views", viewRoute);
-    app.use("/discussions", discussionRoutes);
-    app.use("/questions", questionRoutes);
-    app.use("/scores", scoreRoute); // Use score routes
-
-    // Endpoint to regenerate token
-    app.get("/regenerateToken", (req, res) => {
-      const rToken = req.headers.authorization?.split(" ")[1];
+// Routes
+app.use("/users", userRouter);
+app.use("/courses", courseRoute);
+app.use("/videos", videoRoute);
+app.use("/instructors", instructorRoutes);
+app.use("/enrollments", enrollRouter);
+app.use("/comments", commentRouter);
+app.use("/views", viewRoute);
+app.use("/discussions", discussionRoutes);
+// Endpoint to regenerate token
+app.get("/regenerateToken", (req, res) => {
+  const rToken = req.headers.authorization?.split(" ")[1];
 
       try {
         const decoded = jwt.verify(rToken, "ARIVU");
