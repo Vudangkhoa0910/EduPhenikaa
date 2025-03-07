@@ -8,6 +8,8 @@ const enrollRouter = require("./routes/enroll.route"); // Import đúng router
 const commentRouter = require("./routes/comments.route");
 const viewRoute = require("./routes/view.route");
 const discussionRoutes = require("./routes/discussion.route");
+const questionRoutes = require("./routes/question.route");
+const scoreRoute = require("./routes/score.route");
 const favoriteCourseRoutes = require('./routes/favoritecourse.route');
 const cors = require("cors");
 require("dotenv").config();
@@ -28,6 +30,8 @@ app.use("/enrollments", enrollRouter);
 app.use("/comments", commentRouter);
 app.use("/views", viewRoute);
 app.use("/discussions", discussionRoutes);
+app.use("/questions", questionRoutes);
+app.use("/scores", scoreRoute); // Use score routes
 app.use('/favoritecourses', favoriteCourseRoutes);
 
 // Endpoint to regenerate token
